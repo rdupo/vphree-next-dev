@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 const Card = ({ price, atts, id }) => {
 	return 	(
-		<a className="card-wrapper brite my-2 black-bg white-txt inline-block sans-underline" 
+		<a className="brite my-2 black-bg white-txt inline-block sans-underline" 
 			 data-price={price} 
 			 data-atts={atts}
 			 id={id}
@@ -18,7 +18,7 @@ const Card = ({ price, atts, id }) => {
 					width="100"
 				/>
 			</div> 
-			<div className="card-info-wrapper ml-1">
+			<div className="card-info-wrapper ml-2">
 				<p className="phunk-id mb-0 v3-txt">#{id}</p>
 				<h4 className="phunk-price mb-1">{price}</h4>
 			</div>

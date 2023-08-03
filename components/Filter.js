@@ -4,6 +4,8 @@ import { Silkscreen, Montserrat } from 'next/font/google'
 
 const Filter = () => {
 	const [filtersActive, setFilterState] = useState(false)
+	const [f, setF] = useState({})
+  const [fP, setFP] = useState([])
 	const [beard, setBeard] = useState("")
 	const [cheeks, setCheeks] = useState("")
 	const [ears, setEars] = useState("")
@@ -16,7 +18,7 @@ const Filter = () => {
 	const [neck, setNeck] = useState("")
 	const [nose, setNose] = useState("")                
 	const [sex, setSex] = useState("")  
-	const [teeth, setTeeth] = useState("")            
+	const [teeth, setTeeth] = useState("")             
 	const [traits, setTraits] = useState("")
 	const [appliedFilters, setAppliedFilters] = useState({})
 	//pick up here. on filter change, need to update
@@ -27,11 +29,23 @@ const Filter = () => {
 	//need to figure out how to "refresh" page after that
 	//filtering occurs, if not automatic.
 
+  //trait filtering
+  function trait(x,y) {
+    setF({x:y})
+    fpt = phunks.filter(i => Object.entries(f).every(([k, v]) => i[k] === v))
+    setFP(fpt)
+    console.log(fpt) 
+  }
+
+  //filter by token id
+  const idFilter = () => {
+    fpid = listed.filter(a => a.asset.id.toString().indexOf(v) > -1)
+    setListed(fpid)
+  }
+
+  //toggle class
   const filterToggle = () => {
     setFilterState((current) => !current)
-  }
-  const idFilter = () => {
-    console.log('keyup')
   }
 
 	return (
@@ -66,8 +80,8 @@ const Filter = () => {
 						<select 
 							className="select lite-v3-bg" 
 							type="text" 
-							value={beard}
-							onChange={(e) => {setBeard(e.target.value)}}>
+							value={appliedFilters.beard}
+							onChange={(e) => {trait('beard',e.target.value)}}>
 							<option value="" disabled hidden>Beard</option>
 							<option value="NA">None</option>
 							<option value="Big-Beard">Big Beard</option>
@@ -86,7 +100,7 @@ const Filter = () => {
 						<div className="input-group-append">
 							<button 
 								className="btn-outline v3-bg"
-								onClick={() => {setBeard("")}} 
+								onClick={() => {delete appliedFilters.beard; console.log(typeof(appliedFilters.beard))}} 
 								type="button">x</button>
 						</div>
 					</div>
@@ -95,7 +109,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={cheeks}
-							onChange={(e) => {setCheeks(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Cheeks</option>
 							<option value="NA">None</option>
 							<option value="Rosy-Cheeks">Rosy Cheeks</option>
@@ -112,7 +126,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={ears}
-							onChange={(e) => {setEars(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Ears</option>
 							<option value="NA">None</option>
 							<option value="Earring">Earring</option>
@@ -129,7 +143,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={emotion}
-							onChange={(e) => {setEmotion(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Emotion</option>
 							<option value="NA">None</option>
 							<option value="Frown">Frown</option>
@@ -147,7 +161,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text"
 							value={eyes}
-							onChange={(e) => {setEyes(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Eyes</option>
 							<option value="NA">None</option>
 							<option value="3D-Glasses">3D Glasses</option>
@@ -179,7 +193,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={face}
-							onChange={(e) => {setFace(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Face</option>
 							<option value="NA">None</option>
 							<option value="Mole">Mole</option>
@@ -197,7 +211,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={hair}
-							onChange={(e) => {setHair(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Hair</option>
 							<option value="NA">None</option>
 							<option value="Bandana">Bandana</option>
@@ -254,7 +268,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={lips}
-							onChange={(e) => {setLips(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Lips</option>
 							<option value="NA">None</option>
 							<option value="Black-Lipstick">Black Lipstick</option>
@@ -273,7 +287,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={mouth}
-							onChange={(e) => {setMouth(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Mouth</option>
 							<option value="NA">None</option>
 							<option value="Cigarette">Cigarette</option>
@@ -293,7 +307,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={neck}
-							onChange={(e) => {setNeck(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Neck</option>
 							<option value="NA">None</option>
 							<option value="Choker">Choker</option>
@@ -312,7 +326,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={nose}
-							onChange={(e) => {setNose(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Nose</option>
 							<option value="NA">None</option>
 							<option value="Clown-Nose">Clown Nose</option>
@@ -329,7 +343,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={sex}
-							onChange={(e) => {setSex(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Sex</option>
 							<option value="Alien">Alien</option>
 							<option value="Ape">Ape</option>
@@ -349,7 +363,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={teeth}
-							onChange={(e) => {setTeeth(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Teeth</option>
 							<option value="NA">None</option>
 							<option value="Buck-Teeth">Buck Teeth</option>
@@ -366,7 +380,7 @@ const Filter = () => {
 							className="select lite-v3-bg" 
 							type="text" 
 							value={traits}
-							onChange={(e) => {setTraits(e.target.value)}}>
+							onChange={(e) => {setAppliedFilters(e.target.value)}}>
 							<option value="" disabled hidden>Trait Count</option>
 							<option value="0">0 Trait</option>
 							<option value="1">1 Trait</option>
