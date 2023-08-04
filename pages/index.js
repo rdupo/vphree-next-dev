@@ -15,7 +15,7 @@ export default function Home() {
             <a href="/collections/v3-phunks">
               <button className="cta v3-bg v3-b black-txt">v3 Marketplace</button>
             </a>
-            <a href="/view-all/v3-phunks-alt">
+            <a href="/view-all/v3-phunks">
               <button className="cta v3-b black-bg v3-txt">View All v3s</button>
             </a>
           </div>
