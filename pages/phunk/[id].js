@@ -1,4 +1,5 @@
 import { React, useState } from 'react'
+import Router, { useRouter } from 'next/router'
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Image from 'next/image'
 import Header from  '../../components/Header'
@@ -6,6 +7,8 @@ import Footer from '../../components/Footer'
 import { Silkscreen, Montserrat } from 'next/font/google'
 
 export default function V3Phunks() {
+  const router = useRouter()
+  const id = router.query.id
   const sdk = new ThirdwebSDK("goerli");
   const [listed, setListed] = useState([]);
   (async () => {
@@ -20,19 +23,23 @@ export default function V3Phunks() {
       <div className="page">
         <div className="content mx-4">
           <div className="row-wrapper block px-0 my-4">
-            <div className="nft-info grid-rows-4 inline-block pl-0 align-top v3-bg">
-              <div id="img-wrapper"></div>
+            <div className="nft-info inline-block pl-0 align-top v3-bg w-full">
+              <div id="img-wrapper">
+                <img
+                  src={`https://ipfs.io/ipfs/QmaYDjSxjefTzG5BFPF12FM6CK4AjaxBh3WDTnx58CGusE/${id}.png`}
+                >
+                </img>
+              </div>
             </div>
-            <div className="metadata grid-rows-4 inline-block align-top">
-              <h2 id="title" className="v3-txt">v3phunk #---</h2>
+            <h2 id="title" className="v3-txt">v3phunk #{id}</h2>
+            <div className="metadata inline-block align-top w-1/2">
               <div className="id-and-owner">
                 <p>Owner: <a id="owner">---</a></p>
               </div>
               <div className="metadata" id="md"></div>
             </div>
-            <div className="contract-interactions grid-rows-3 inline-block pr-0 align-top">
+            <div className="contract-interactions inline-block pr-0 align-top">
               <div className="price-and-bid">
-                <h2 className="lite-v3-txt">&nbsp;</h2>
                 <p id="price">Price: ---</p>
                 <p id="bid" className="hidden">Top Bid: ---</p>
                 <p className="hidden">Bidder: <a id="top-bidder">---</a></p>

@@ -217,6 +217,16 @@ select, option, .black-txt {
   margin-left: 5%;
 }
 
+#img-wrapper {
+  width: 30%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#title {
+  font-size: xx-large;
+}
+
 /*mobile*/
 @media only screen and (max-width: 768px) {
   /*home*/
