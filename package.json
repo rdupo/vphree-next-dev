@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@thirdweb-dev/sdk": "^3.10.40",
+    "@thirdweb-dev/wallets": "^1.1.10",
+    "alchemy-sdk": "^2.9.2",
     "autoprefixer": "10.4.14",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",

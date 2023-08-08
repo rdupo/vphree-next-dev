@@ -1,11 +1,29 @@
-import React from 'react'
+import { React, useState } from 'react'
 import Image from 'next/image'
 import Logo from '../assets/vphree24.png'
 import Wallet from '../assets/wallet.png'
 import Profile from '../assets/profile-icon.png'
 import Discord from '../assets/discord.png'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk';
+import { ethers } from 'ethers'
 
 const Header = () => {
+  const [connectedAddress, setConnectedAddress] = useState('');
+
+  async function connectWallet() {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const mmp = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = mmp.getSigner(accounts[0]);       
+        const address = await signer.getAddress();
+        setConnectedAddress(address); // Update the state with the connected address
+      } catch (error) {
+        console.log('MetaMask not found or error:', error);
+      }
+    }
+  }
+
 	return 	(
 		<div className="v3-txt black-bg flex">
 			<div className={"mr-auto brite"}>
@@ -33,6 +51,7 @@ const Header = () => {
 					className="inline-flex align-middle my-3 mr-5 h-img-w brite" 
 					src={Wallet}
 					alt="connect wallet icon"
+					onClick={connectWallet}
 				/>
 				<a href="/profile">
 					<Image

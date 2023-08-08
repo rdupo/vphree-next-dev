@@ -5,8 +5,11 @@ import Image from 'next/image'
 import Header from  '../../components/Header'
 import Footer from '../../components/Footer'
 import { Silkscreen, Montserrat } from 'next/font/google'
+import { Network, Alchemy } from 'alchemy-sdk'
+import { ethers } from "ethers"
 
 export default function V3Phunks() {
+  //json of phunk atts
   const phunks = [
   "<p className='collection-desc my-1'>SEX: <span className='lite-v3-txt'>Female</span></p><p className='collection-desc my-1'>EARS: <span className='lite-v3-txt'>Earring</span></p><p className='collection-desc my-1'>EYES: <span className='lite-v3-txt'>Green Eye Shadow</span></p><p className='collection-desc my-1'>HAIR: <span className='lite-v3-txt'>Blonde Bob</span></p>",
   "<p className='collection-desc my-1'>SEX: <span className='lite-v3-txt'>Male</span></p><p className='collection-desc my-1'>EMOTION: <span className='lite-v3-txt'>Smile</span></p><p className='collection-desc my-1'>HAIR: <span className='lite-v3-txt'>Mohawk</span></p>",
@@ -10012,13 +10015,42 @@ export default function V3Phunks() {
   const router = useRouter()
   const id = router.query.id
   const atts = phunks[id]
+  const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
   const sdk = new ThirdwebSDK("goerli");
   const [listed, setListed] = useState([]);
+  const [connectedAddress, setConnectedAddress] = useState('');
+
+  //get listing info, if listed
   (async () => {
     const contract = await sdk.getContract("0x8aC28C421d2CB0CbE06d47D617314159247Cd2dc", "marketplace");
-    const listings = await contract.getActiveListings();
-    setListed(listings)
+    const listings = await contract.getActiveListings({tokenContract:collectionContract});
+    const thisPhunk = listings.filter(a => a.asset.id === id)
+    setListed(thisPhunk)
+    console.log(listed.length)
+  })();
+
+  //get connected wallet
+  (async () => {
+    if (window.ethereum) {
+      if (await window.ethereum.isConnected()) {          
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const mmp = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = mmp.getSigner(accounts[0]);       
+          const address = await signer.getAddress();
+          setConnectedAddress(address); // Update the state with the connected address
+        } catch (error) {
+          console.log('MetaMask not found or error:', error);
+        }
+      }
+    }
   })()
+
+  //get phunk owner
+  (async () => {
+
+    
+  })
   
   return (
     <>
@@ -10034,84 +10066,89 @@ export default function V3Phunks() {
                 </img>
               </div>
             </div>
-            <h2 id="title" className="v3-txt">v3phunk #{id}</h2>
+            <h2 id="title" className="v3-txt mb-3">v3phunk #{id}</h2>
             <div className="metadata inline-block align-top w-1/3">
               <div className="id-and-owner">
-                <p>Owner: <a id="owner">---</a></p>
+                <p>Owner</p>
+                  <a id="owner" className="collection-desc">
+                    {connectedAddress.substr(0,4) + `...` + connectedAddress.substr(connectedAddress.length-4, connectedAddress.length)}
+                  </a>
               </div>
             </div>
             <div className="metadata inline-block align-top w-1/3">
               <p>Attributes</p>
               <div className="metadata" id="md">
-                <div className="collection-desc lite-v3-txt my-1" dangerouslySetInnerHTML={{ __html: atts}} />
+                <div className="collection-desc v3-txt my-1" dangerouslySetInnerHTML={{ __html: atts}} />
               </div>
             </div>
-            <div className="contract-interactions inline-block pr-0 align-top">
+            <div className="contract-interactions inline-block pr-0 align-top w-1/3">
               <div className="price-and-bid">
                 <p id="price">Price: ---</p>
-                <p id="bid" className="hidden">Top Bid: ---</p>
-                <p className="hidden">Bidder: <a id="top-bidder">---</a></p>
+                <p id="bid" className="">Top Bid: ---</p>
+                <p className="">Bidder: <a id="top-bidder">---</a></p>
               </div>
               <div 
-                className="p-3 black-bg v3-txt hidden v3-b" 
+                className="p-3 black-bg v3-txt v3-b w-full"  
                 id="not-connected">
                   Please connect your wallet to interact with this Phunk
               </div>
-              <div className="hidden" id="buy-bid-buttons">
+              <div className="" id="buy-bid-buttons">
                 <button 
-                  className="v3-bg w-100 p-1 my-2 brite hidden" 
+                  className="v3-bg black-txt w-full p-1 my-2 brite" 
                   //onClick="buyPhunk();"
                   id="buy-btn">BUY</button>
                 <br/>
                 <button 
-                  className="v3-bg w-100 p-1 my-2 brite hidden" 
+                  className="v3-bg black-txt w-full p-1 my-2 brite" 
                   //onClick="togl('enter-bid-amount');"
                   id="bid-btn-togl">BID</button>
                 <br/>
-                <div className="hidden" id="enter-bid-amount">
+                <div className="" id="enter-bid-amount">
                   <input
-                    className="lite-v3-bg w-100 p-1 my-2" 
+                    className="lite-v3-bg w-full p-1 my-2 black-txt" 
                     type="number" 
                     name="bid-amt" 
                     placeholder="bid amount"
+                    min="0"
                     id="bid-amt"/>
                   <br/>
                   <button 
-                    className="black-bg v3-txt v3-b w-100 p-1 my-2 brite" 
+                    className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
                     //onClick="bidOnPhunk();"
                     id="place-bid-btn">PLACE BID</button>
                 </div>
                 <button 
-                  className="v3-bg w-100 p-1 my-2 brite hidden"
+                  className="v3-bg black-txt w-full p-1 my-2 brite"
                   //onClick="cancelPhunkBid()"
                   id="cxl-bid-btn">CANCEL BID</button>
               </div>
               <div className="seller-buttons">
                 <button 
-                  className="v3-bg w-100 p-1 my-2 brite hidden" 
+                  className="v3-bg black-txt w-full p-1 my-2 brite" 
                   //onClick="togl('enter-list-amount');"
                   id="list-btn-togl">LIST</button>
                 <br id="delist-br"/>
-                <div id="enter-list-amount" className="hidden">
+                <div id="enter-list-amount" className="">
                   <input 
-                    className="lite-v3-bg w-100 p-1 my-2" 
+                    className="lite-v3-bg w-full p-1 my-2 black-txt" 
                     type="number" 
                     name="sell-amt" 
                     placeholder="list price"
+                    min="0"
                     id="sell-amt"/>
                   <br/>
                   <button 
-                    className="black-bg v3-txt v3-b w-100 p-1 my-2 brite" 
+                    className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
                     //onClick="offerPhunkForSale();"
                     >LIST</button>
                 </div>
                 <button 
-                  className="v3-bg w-100 p-1 my-2 brite hidden" 
+                  className="v3-bg black-txt w-full p-1 my-2 brite" 
                   //onClick="delistPhunk();"
                   id="delist-btn">DELIST</button>
                 <br/>
                 <button 
-                  className="v3-bg w-100 p-1 my-2 brite hidden" 
+                  className="v3-bg black-txt w-full p-1 my-2 brite" 
                   //onClick="acceptBidForPhunk();"
                   id="accept-bid-btn">ACCEPT BID</button>
               </div>

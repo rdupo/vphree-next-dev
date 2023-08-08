@@ -2,8 +2,13 @@ import React from 'react'
 import Header from  '../components/Header'
 import Footer from '../components/Footer'
 import { Silkscreen, Montserrat } from 'next/font/google'
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { MetaMaskWallet } from "@thirdweb-dev/wallets";
 
 export default function Home() {
+  const wallet = new MetaMaskWallet();
+  wallet.connect();
+  
   return (
     <>
       <Header/>
