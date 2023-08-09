@@ -10062,7 +10062,7 @@ export default function V3Phunks() {
         </div>
         <div className="content px-8">
           <CollectionInfo
-            title="v3 Marketplace"
+            title="All V3 Phunks"
             desc="View all 10,000 v3Phunks. Click on a Phunk to view it&#39;s attribute(s) or bid on/buy it."
             twitter="https://twitter.com/v3phunks"
             contract={collectionContract}

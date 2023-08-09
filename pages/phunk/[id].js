@@ -10018,16 +10018,44 @@ export default function V3Phunks() {
   const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
   const sdk = new ThirdwebSDK("goerli");
   const [listed, setListed] = useState([]);
+  const [offers, setOffers] = useState([]);
   const [connectedAddress, setConnectedAddress] = useState('');  
   const [owner, setOwner] = useState('');
+  const [bidActive, setBidState] = useState(false);
+  const [listActive, setListState] = useState(false);
 
-  //get listing info, if listed
+  //toggle class
+  const bidToggle = () => {
+    setBidState((current) => !current)
+  }
+
+  const listToggle = () => {
+    setListState((current) => !current)
+  }
+
+  //get highest offer
+  function highOffer(offers) {
+    if (offers.length === 0) {
+      return [];
+    }
+    let highestOffer = offers[0];
+    for (let i = 1; i < offers.length; i++) {
+      if (offers[i].pricePerToken > highestOffer.pricePerToken) {
+        highestOffer = offers[i];
+      }
+    }
+    return highestOffer;
+  }
+
+  //get listing info and bid info, if they exist
   (async () => {
     const contract = await sdk.getContract("0x8aC28C421d2CB0CbE06d47D617314159247Cd2dc", "marketplace");
     const listings = await contract.getActiveListings({tokenContract:collectionContract});
-    const thisPhunk = listings.filter(a => a.asset.id === id)
-    setListed(thisPhunk)
-    console.log(listed.length)
+    const thisPhunk = listings.filter(a => a.asset.id === id);
+    setListed(thisPhunk);
+    const bids = await contract.getOffers(thisPhunk[0].id);
+    const topBid = highOffer(bids);
+    setOffers(topBid);
   })();
 
   //get connected wallet
@@ -10093,83 +10121,124 @@ export default function V3Phunks() {
             </div>
             <div className="contract-interactions inline-block pr-0 align-top w-1/3">
               <div className="price-and-bid">
-                <p id="price">Price:&nbsp;
-                  <span className="collection-desc">---</span>
-                </p>
-                <p id="bid" className="">Top Bid:&nbsp;
-                  <span className="collection-desc">---</span>
-                </p>
-                <p className="">Bidder:&nbsp; 
-                  <a className="collection-desc" id="top-bidder">
-                    {connectedAddress.substr(0,4) + `...` + connectedAddress.substr(connectedAddress.length-4, connectedAddress.length)}
-                  </a>
-                </p>
+                {listed.length === 0 ?
+                  null
+                  :
+                  <p id="price">Price:&nbsp;
+                    <span className="collection-desc v3-txt">
+                      {listed[0].buyoutCurrencyValuePerToken.displayValue + 'Ξ'}
+                    </span>
+                  </p>
+                }
+                {offers.length === 0 ?
+                  null
+                  :
+                  <>
+                    <p id="bid" className="">Top Bid:&nbsp;
+                      <span className="collection-desc">{offers[0].currencyValue + 'Ξ'}</span>
+                    </p>
+                    <p className="">Bidder:&nbsp; 
+                      <a className="collection-desc" id="top-bidder">
+                        {offers[0].buyerAddress.substr(0,4) + `...` + offers[0].buyerAddress.substr(offers[0].buyerAddress.length-4, offers[0].buyerAddress.length)}
+                      </a>
+                    </p>
+                  </>
+                }
               </div>
-              <div 
-                className="p-3 black-bg v3-txt v3-b w-full"  
-                id="not-connected">
-                  Please connect your wallet to interact with this Phunk
-              </div>
-              <div className="" id="buy-bid-buttons">
-                <button 
-                  className="v3-bg black-txt w-full p-1 my-2 brite" 
-                  //onClick="buyPhunk();"
-                  id="buy-btn">BUY</button>
-                <br/>
-                <button 
-                  className="v3-bg black-txt w-full p-1 my-2 brite" 
-                  //onClick="togl('enter-bid-amount');"
-                  id="bid-btn-togl">BID</button>
-                <br/>
-                <div className="" id="enter-bid-amount">
-                  <input
-                    className="lite-v3-bg w-full p-1 my-2 black-txt" 
-                    type="number" 
-                    name="bid-amt" 
-                    placeholder="bid amount"
-                    min="0"
-                    id="bid-amt"/>
-                  <br/>
-                  <button 
-                    className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                    //onClick="bidOnPhunk();"
-                    id="place-bid-btn">PLACE BID</button>
+              {connectedAddress ? 
+                null :
+                <div 
+                  className="p-3 black-bg v3-txt v3-b w-full"  
+                  id="not-connected">
+                    Please connect your wallet to interact with this Phunk
                 </div>
-                <button 
-                  className="v3-bg black-txt w-full p-1 my-2 brite"
-                  //onClick="cancelPhunkBid()"
-                  id="cxl-bid-btn">CANCEL BID</button>
-              </div>
-              <div className="seller-buttons">
-                <button 
-                  className="v3-bg black-txt w-full p-1 my-2 brite" 
-                  //onClick="togl('enter-list-amount');"
-                  id="list-btn-togl">LIST</button>
-                <br id="delist-br"/>
-                <div id="enter-list-amount" className="">
-                  <input 
-                    className="lite-v3-bg w-full p-1 my-2 black-txt" 
-                    type="number" 
-                    name="sell-amt" 
-                    placeholder="list price"
-                    min="0"
-                    id="sell-amt"/>
+              }
+              {connectedAddress !== owner ?
+                <div className="" id="buy-bid-buttons">
+                  {listed.length === 0 ?
+                    null
+                    :
+                    <><button 
+                      className="v3-bg black-txt w-full p-1 my-2 brite" 
+                      //onClick="buyPhunk();"
+                      id="buy-btn">BUY</button><br/></>
+                  }
+                    <button 
+                      className="v3-bg black-txt w-full p-1 my-2 brite" 
+                      onClick={bidToggle}
+                      id="bid-btn-togl">BID
+                    </button>
                   <br/>
-                  <button 
-                    className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                    //onClick="offerPhunkForSale();"
-                    >LIST</button>
+                  <div className={bidActive ? '' : 'hidden'} id="enter-bid-amount">
+                    <input
+                      className="lite-v3-bg w-full p-1 my-2 black-txt" 
+                      type="number" 
+                      name="bid-amt" 
+                      placeholder="bid amount"
+                      min="0"
+                      id="bid-amt"/>
+                    <br/>
+                    <button 
+                      className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
+                      //onClick="bidOnPhunk();"
+                      id="place-bid-btn">PLACE BID</button>
+                  </div>
+                  {offers.length === 1 && offers[0].buyerAddress === connectedAddress ?
+                    <button 
+                      className="v3-bg black-txt w-full p-1 my-2 brite"
+                      //onClick="cancelPhunkBid()"
+                      id="cxl-bid-btn">
+                      CANCEL BID
+                    </button>
+                    :
+                    null
+                  }
                 </div>
-                <button 
-                  className="v3-bg black-txt w-full p-1 my-2 brite" 
-                  //onClick="delistPhunk();"
-                  id="delist-btn">DELIST</button>
-                <br/>
-                <button 
-                  className="v3-bg black-txt w-full p-1 my-2 brite" 
-                  //onClick="acceptBidForPhunk();"
-                  id="accept-bid-btn">ACCEPT BID</button>
-              </div>
+                :
+                <div className="seller-buttons">
+                  {listed.length === 0 ?
+                    <>
+                      <button 
+                        className="v3-bg black-txt w-full p-1 my-2 brite" 
+                        onClick={listToggle}
+                        id="list-btn-togl">LIST</button>
+                      <br id="delist-br"/>
+                      <div id="enter-list-amount" className={listActive ? '' : 'hidden'}>
+                        <input 
+                          className="lite-v3-bg w-full p-1 my-2 black-txt" 
+                          type="number" 
+                          name="sell-amt" 
+                          placeholder="list price"
+                          min="0"
+                          id="sell-amt"/>
+                        <br/>
+                        <button 
+                          className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
+                          //onClick="offerPhunkForSale();"
+                          >LIST</button>
+                      </div>
+                    </>
+                    :
+                    <>
+                      <button 
+                        className="v3-bg black-txt w-full p-1 my-2 brite" 
+                        //onClick="delistPhunk();"
+                        id="delist-btn">DELIST</button>
+                      <br/>
+                    </>
+                  }
+                  {offers.length === 0 ?
+                    null
+                    :
+                    <button 
+                      className="v3-bg black-txt w-full p-1 my-2 brite" 
+                      //onClick="acceptBidForPhunk();"
+                      id="accept-bid-btn">
+                      ACCEPT BID
+                    </button>
+                  }
+                </div>
+              }
             </div>
           </div>
           <div className="row-wrapper mt-5">
