@@ -4,6 +4,8 @@ import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import Footer from '../../components/Footer'
+import History from '../../components/History'
+import getTxnHistory from '../../hooks/TxnHistory'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
@@ -10023,6 +10025,7 @@ export default function V3Phunks() {
   const [owner, setOwner] = useState('');
   const [bidActive, setBidState] = useState(false);
   const [listActive, setListState] = useState(false);
+  const { transactionHistory } = getTxnHistory(collectionContract, id);
 
   //toggle class
   const bidToggle = () => {
@@ -10053,9 +10056,11 @@ export default function V3Phunks() {
     const listings = await contract.getActiveListings({tokenContract:collectionContract});
     const thisPhunk = listings.filter(a => a.asset.id === id);
     setListed(thisPhunk);
-    const bids = await contract.getOffers(thisPhunk[0].id);
-    const topBid = highOffer(bids);
-    setOffers(topBid);
+    if(typeof(thisPhunk[0])!=='undefined'){
+      const bids = await contract.getOffers(thisPhunk[0].id);
+      const topBid = highOffer(bids);
+      setOffers(topBid);
+    } 
   })();
 
   //get connected wallet
@@ -10242,7 +10247,9 @@ export default function V3Phunks() {
             </div>
           </div>
           <div className="row-wrapper mt-5">
-            <div className="tx-history"></div>
+            <History 
+              transactions={transactionHistory}
+            />
           </div>
         </div>
       </div>

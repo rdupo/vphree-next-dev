@@ -22,6 +22,19 @@ a:hover {
   cursor: pointer;
 }
 
+th, td {
+  padding: 4px 8px;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #83dfb233;
+}
+
+/* Style for even rows */
+tbody tr:nth-child(even) {
+  background-color: #83dfb267;
+}
+
 /*bg colors*/
 .v3-bg {
   background-color: #83dfb2;
