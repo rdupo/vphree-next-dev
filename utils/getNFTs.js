@@ -8,7 +8,7 @@ export async function getNFTs(walletAddy) {
   const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
   const contract = new ethers.Contract(v3Addy, v3Abi, provider);
 
-  const filter = contract.filters.Transfer(null, walletAddress); // Filter for Transfer events to the wallet
+  const filter = contract.filters.Transfer(null, walletAddy); // Filter for Transfer events to the wallet
   const transferEvents = await contract.queryFilter(filter);
 
   const nftIds = transferEvents.map(event => event.args.tokenId.toString());

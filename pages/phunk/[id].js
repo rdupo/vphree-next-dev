@@ -10113,9 +10113,12 @@ export default function V3Phunks() {
             <div className="metadata inline-block align-top w-1/3">
               <div className="id-and-owner">
                 <p>Owner</p>
-                  <a id="owner" className="collection-desc">
-                    {owner.substr(0,4) + `...` + owner.substr(owner.length-4, owner.length)}
-                  </a>
+                <div 
+                  id="owner" 
+                  className="collection-desc brite v3-txt sans-underline"
+                  onClick={() => {Router.push({pathname: `/profile/${owner}`})}}>
+                  {owner.substr(0,4) + `...` + owner.substr(owner.length-4, owner.length)}
+                </div>
               </div>
             </div>
             <div className="metadata inline-block align-top w-1/3">
@@ -10143,9 +10146,13 @@ export default function V3Phunks() {
                       <span className="collection-desc">{offers[0].currencyValue + 'Ξ'}</span>
                     </p>
                     <p className="">Bidder:&nbsp; 
-                      <a className="collection-desc" id="top-bidder">
-                        {offers[0].buyerAddress.substr(0,4) + `...` + offers[0].buyerAddress.substr(offers[0].buyerAddress.length-4, offers[0].buyerAddress.length)}
-                      </a>
+                      <div 
+                        id="top-bidder"
+                        className="collection-desc brite v3-txt sans-underline"
+                        onClick={() => {Router.push({pathname: `/profile/${buyerAddress}`})}}
+                        >
+                          {offers[0].buyerAddress.substr(0,4) + `...` + offers[0].buyerAddress.substr(offers[0].buyerAddress.length-4, offers[0].buyerAddress.length)}
+                      </div>
                     </p>
                   </>
                 }

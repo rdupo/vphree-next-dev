@@ -9,7 +9,7 @@ const Card = ({ price, atts, id }) => {
 			data-price={price} 
 			data-atts={atts}
 			id={id}
-			 onClick={() => {Router.push({pathname: `/phunk/${id}`})}}
+			onClick={() => {Router.push({pathname: `/phunk/${id}`})}}
 		>
 			<div className="img-wrapper v3-bg">
 				<img 

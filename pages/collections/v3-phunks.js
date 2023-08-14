@@ -23,8 +23,7 @@ export default function V3Phunks() {
     //all listings
     const contract = await sdk.getContract("0x8aC28C421d2CB0CbE06d47D617314159247Cd2dc", "marketplace");
     const listings = await contract.getActiveListings({tokenContract:collectionContract});
-    const l2 = listings.filter(a => a.asset.id == 1)
-    setListed(l2)
+    setListed(listings)
   })()
 
    return (

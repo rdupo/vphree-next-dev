@@ -3,12 +3,13 @@ import Router, { useRouter } from 'next/router'
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Image from 'next/image'
 import Header from  '../../components/Header'
+import Card from '../../components/Card'
 import Footer from '../../components/Footer'
 import Banner from '../../assets/profile-banner.png'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
-import { getNFTs } from '../../utils/nft';
+import { getNFTs } from '../../utils/getNFTs';
 
 export default function V3Phunks() {
   const router = useRouter()
@@ -33,7 +34,9 @@ export default function V3Phunks() {
 	      	<Image className="col-banner" src={Banner} width="100%" alt="profile banner"/>
 	      </div>
         <div className="content mx-4">
-        	<h1 className="v3-txt mr-auto text-5xl">{walletAddy}</h1>
+        	<h1 className="v3-txt mr-auto text-5xl">
+            {walletAddy.substr(0,4) + "..." + walletAddy.substr(walletAddy.length - 4, walletAddy.length)}
+          </h1>
         	<div className="flex flex-wrap justify-center">
 	            {nfts.map((nftId) => (
 	            	(typeof(nftId) != 'undefined' ?

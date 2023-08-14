@@ -10,6 +10,7 @@ const History = ({ transactions }) => {
             <th>Event</th>
             <th>From</th>
             <th>To</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -24,9 +25,12 @@ const History = ({ transactions }) => {
                 transaction.from.substr(transaction.from.length - 4, transaction.from.length)}
               </td>
               <td>
-                {transaction.to.substr(0,4) +
+                {transaction.to.length > 0 ? transaction.to.substr(0,4) +
                 '...' + 
-                transaction.to.substr(transaction.to.length - 4, transaction.to.length)}
+                transaction.to.substr(transaction.to.length - 4, transaction.to.length) : "---"}
+              </td>
+              <td>
+                {transaction.amount > 0 ? transaction.amount + "Ξ" : "---"}
               </td>
             </tr>
           ))}
