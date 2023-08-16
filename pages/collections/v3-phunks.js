@@ -20,33 +20,32 @@ export default function V3Phunks() {
   const sdk = new ThirdwebSDK("goerli");
   const [listed, setListed] = useState([]);
   const [f, setF] = useState({})
-  const [beard, setBeard] = useState("")
-  const [cheeks, setCheeks] = useState("")
-  const [ears, setEars] = useState("")
-  const [emotion, setEmotion] = useState("")
-  const [eyes, setEyes] = useState("")
-  const [face, setFace] = useState("")             
-  const [hair, setHair] = useState("")
-  const [lips, setLips] = useState("")
-  const [mouth, setMouth] = useState("")
-  const [neck, setNeck] = useState("")
-  const [nose, setNose] = useState("")                
-  const [sex, setSex] = useState("")  
-  const [teeth, setTeeth] = useState("")             
-  const [traits, setTraits] = useState("")
   const [filtersActive, setFilterState] = useState(false)
   const [sortActive, setSortState] = useState(false)
-  const [appliedFilters, setAppliedFilters] = useState({})
   const [fP, setFP] = useState([])
   const [displayedData, setDisplayedData] = useState([])
 
   // trait and id filtering
-  function filterPhunks() {
-    return listed.filter(
-      (i) =>
-        Object.entries(f).every(([k, v]) => k === 'tokenId' ? i.tokenId.toString().indexOf(v) > -1 : i[k] === v)
-    );
-  }
+  // Filter the displayedData based on the current filter state 'f'
+  const filteredData = listed.filter((item) => {
+    for (const [trait, value] of Object.entries(f)) {
+      if (trait === 'tokenId') {
+        if (item.tokenId.toString().indexOf(value) === -1) {
+          return false;
+        }
+      } else if  (trait === 'Traits') {
+        if (item.asset.attributes.length.toString() !== value) {
+          return false;
+        }
+      } else {
+        const matchingAttribute = item.asset.attributes.find(attr => attr.trait_type === trait && attr.value === value);
+        if (!matchingAttribute) {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
 
   //sort listings
   const sortData = (order) => {
@@ -67,12 +66,6 @@ export default function V3Phunks() {
     }
   };
 
-  // Use the useEffect hook to monitor changes to the 'f' state
-  useEffect(() => {
-    const filteredPhunks = filterPhunks();
-    setFP(filteredPhunks);
-  }, [f]); // The useEffect hook will run whenever 'f' changes
-
   //toggle class
   const filterToggle = () => {
     setFilterState((current) => !current)
@@ -86,22 +79,19 @@ export default function V3Phunks() {
     (async () => {
       const contract = await sdk.getContract("0x8aC28C421d2CB0CbE06d47D617314159247Cd2dc", "marketplace");
       const listings = await contract.getActiveListings({ tokenContract: collectionContract });
-      console.log(listings)
-
-      // Apply filtering to the fetched data
-      //const filteredListings = filterPhunks(listings);
-      //console.log('phunks filtered');
-      //console.log(filteredListings);
-
-      // Apply sorting to the filtered data
-      const sortedListings = [...listings].sort((a, b) => {
-        return a.buyoutCurrencyValuePerToken.value - b.buyoutCurrencyValuePerToken.value;
-      });
-
-      setListed(sortedListings);
-      setDisplayedData(sortedListings); // Update the displayed data as well
+      setListed(listings);
+      setDisplayedData(listings);
     })();
-  }, [appliedFilters]); // You might want to include appliedFilters here as a dependency
+  }, []);
+
+  useEffect(() => {
+    // Apply filtering based on f and sort the filteredData array here
+    const sortedFilteredData = filteredData.slice().sort((a, b) => {
+      return a.buyoutCurrencyValuePerToken.value - b.buyoutCurrencyValuePerToken.value;
+    });
+
+    setDisplayedData(sortedFilteredData);
+  }, [f]);
 
   return (
     <>
@@ -112,8 +102,8 @@ export default function V3Phunks() {
         </div>
         <div className="content px-8">
           <CollectionInfo
-            title="All V3 Phunks"
-            desc="View all 10,000 v3Phunks. Click on a Phunk to view it&#39;s attribute(s) or bid on/buy it."
+            title="V3Phunks"
+            desc={desc}
             twitter="https://twitter.com/v3phunks"
             contract={collectionContract}
           />
@@ -160,41 +150,35 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={beard}
+                    value={f['Beard'] || ''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, beard: e.target.value }));
-                      setBeard(e.target.value)
+                      setF((prevState) => ({ ...prevState, Beard: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Beard</option>
-                    <option value="NA">None</option>
-                    <option value="Big-Beard">Big Beard</option>
+                    <option value="" disabled hidden>Beard</option>                    
+                    <option value="Big Beard">Big Beard</option>
                     <option value="Chinstrap">Chinstrap</option>
-                    <option value="Front-Beard">Front Beard</option>
-                    <option value="Front-Beard-Dark">Front Beard Dark</option>
+                    <option value="Front Beard">Front Beard</option>
+                    <option value="Front Beard Dark">Front Beard Dark</option>
                     <option value="Goat">Goat</option>
                     <option value="Handlebars">Handlebars</option>
-                    <option value="Luxurious-Beard">Luxurious Beard</option>
+                    <option value="Luxurious Beard">Luxurious Beard</option>
                     <option value="Mustache">Mustache</option>
                     <option value="Muttonchops">Muttonchops</option>
-                    <option value="Normal-Beard">Normal Beard</option>
-                    <option value="Normal-Beard-Black">Normal Beard Black</option>
-                    <option value="Shadow-Beard">Shadow Beard</option>
+                    <option value="Normal Beard">Normal Beard</option>
+                    <option value="Normal Beard Black">Normal Beard Black</option>
+                    <option value="Shadow Beard">Shadow Beard</option>
                   </select>
                   <div className="input-group-append">
                     <button 
                       className="btn-outline v3-bg"
                       onClick={() => {
                         setF((prevState) => {
-                          // Create a copy of the state to avoid modifying it directly
                           const updatedState = { ...prevState };
-                          // Remove the 'beard' property from the state
-                          delete updatedState.beard;
-                          // Return the updated state
+                          delete updatedState['Beard']; // Clear the 'Beard' filter
                           return updatedState;
                         });
-                        setBeard("");
-                      }} 
+                      }}
                       type="button">x</button>
                   </div>
                 </div>
@@ -202,15 +186,13 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={cheeks}
+                    value={f['Cheeks']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, cheeks: e.target.value }));
-                      setCheeks(e.target.value)
+                      setF((prevState) => ({ ...prevState, Cheeks: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Cheeks</option>
-                    <option value="NA">None</option>
-                    <option value="Rosy-Cheeks">Rosy Cheeks</option>
+                    <option value="" disabled hidden>Cheeks</option>                    
+                    <option value="Rosy Cheeks">Rosy Cheeks</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -218,10 +200,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.cheeks;
+                          delete updatedState['Cheeks'];
                           return updatedState;
                         });
-                        setCheeks("");
                       }} 
                       type="button">x</button>
                   </div>
@@ -230,14 +211,12 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={ears}
+                    value={f['Ears']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, ears: e.target.value }));
-                      setEars(e.target.value)
+                      setF((prevState) => ({ ...prevState, Ears: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Ears</option>
-                    <option value="NA">None</option>
+                    <option value="" disabled hidden>Ears</option>                    
                     <option value="Earring">Earring</option>
                   </select>
                   <div className="input-group-append">
@@ -246,10 +225,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.ears;
+                          delete updatedState['Ears'];
                           return updatedState;
                         });
-                        setEars("");
                       }}
                       type="button">x</button>
                   </div>
@@ -258,14 +236,13 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={emotion}
+                    value={f['Emotion']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, emotion: e.target.value }));
-                      setEmotion(e.target.value)
+                      setF((prevState) => ({ ...prevState, Emotion: e.target.value }));
                     }}
                   >
                     <option value="" disabled hidden>Emotion</option>
-                    <option value="NA">None</option>
+                    
                     <option value="Frown">Frown</option>
                     <option value="Smile">Smile</option>
                   </select>
@@ -275,10 +252,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.emotion;
+                          delete updatedState['Emotion'];
                           return updatedState;
                         });
-                        setEmotion("");
                       }}  
                       type="button">x</button>
                   </div>
@@ -287,29 +263,27 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text"
-                    value={eyes}
+                    value={f['Eyes']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, eyes: e.target.value }));
-                      setEyes(e.target.value)
+                      setF((prevState) => ({ ...prevState, Eyes: e.target.value }));
                     }}>
-                    <option value="" disabled hidden>Eyes</option>
-                    <option value="NA">None</option>
-                    <option value="3D-Glasses">3D Glasses</option>
-                    <option value="Big-Shades">Big Shades</option>
-                    <option value="Blue-Eye-Shadow">Blue Eye Shadow</option>
-                    <option value="Classic-Shades">Classic Shades</option>
-                    <option value="Clown-Eyes-Blue">Clown Eyes Blue</option>
-                    <option value="Clown-Eyes-Green">Clown Eyes Green</option>
-                    <option value="Eye-Mask">Eye Mask</option>
-                    <option value="Eye-Patch">Eye Patch</option>
-                    <option value="Green-Eye-Shadow">Green Eye Shadow</option>
-                    <option value="Horned-Rim-Glasses">Horned Rim Glasses</option>
-                    <option value="Nerd-Glasses">Nerd Glasses</option>
-                    <option value="Purple-Eye-Shadow">Purple Eye Shadow</option>
-                    <option value="Regular-Shades">Regular Shades</option>
-                    <option value="Small-Shades">Small Shades</option>
+                    <option value="" disabled hidden>Eyes</option>                    
+                    <option value="3D Glasses">3D Glasses</option>
+                    <option value="Big Shades">Big Shades</option>
+                    <option value="Blue Eye Shadow">Blue Eye Shadow</option>
+                    <option value="Classic Shades">Classic Shades</option>
+                    <option value="Clown Eyes Blue">Clown Eyes Blue</option>
+                    <option value="Clown Eyes Green">Clown Eyes Green</option>
+                    <option value="Eye Mask">Eye Mask</option>
+                    <option value="Eye Patch">Eye Patch</option>
+                    <option value="Green Eye Shadow">Green Eye Shadow</option>
+                    <option value="Horned Rim Glasses">Horned Rim Glasses</option>
+                    <option value="Nerd Glasses">Nerd Glasses</option>
+                    <option value="Purple Eye Shadow">Purple Eye Shadow</option>
+                    <option value="Regular Shades">Regular Shades</option>
+                    <option value="Small Shades">Small Shades</option>
                     <option value="VR">VR</option>
-                    <option value="Welding-Goggles">Welding Goggles</option>
+                    <option value="Welding Goggles">Welding Goggles</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -317,10 +291,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.eyes;
+                          delete updatedState['Eyes'];
                           return updatedState;
                         });
-                        setEyes("");
                       }} 
                       type="button">x</button>
                   </div>
@@ -329,14 +302,12 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={face}
+                    value={f['Face']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, face: e.target.value }));
-                      setFace(e.target.value)
+                      setF((prevState) => ({ ...prevState, Face: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Face</option>
-                    <option value="NA">None</option>
+                    <option value="" disabled hidden>Face</option>                    
                     <option value="Mole">Mole</option>
                     <option value="Spots">Spots</option>
                   </select>
@@ -346,10 +317,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.face;
+                          delete updatedState['Face'];
                           return updatedState;
                         });
-                        setFace("");
                       }} 
                       type="button">x</button>
                   </div>
@@ -358,55 +328,53 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={hair}
+                    value={f['Hair']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, hair: e.target.value }));
-                      setHair(e.target.value)
+                      setF((prevState) => ({ ...prevState, Hair: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Hair</option>
-                    <option value="NA">None</option>
+                    <option value="" disabled hidden>Hair</option>                    
                     <option value="Bandana">Bandana</option>
                     <option value="Beanie">Beanie</option>
-                    <option value="Blonde-Bob">Blonde Bob</option>
-                    <option value="Blonde-Short">Blonde Short</option>
+                    <option value="Blonde Bob">Blonde Bob</option>
+                    <option value="Blonde Short">Blonde Short</option>
                     <option value="Cap">Cap</option>
-                    <option value="Cap-Forward">Cap Forward</option>
-                    <option value="Clown-Hair-Green">Clown Hair Green</option>
-                    <option value="Cowboy-Hat">Cowboy Hat</option>
-                    <option value="Crazy-Hair">Crazy Hair</option>
-                    <option value="Dark-Hair">Dark Hair</option>
+                    <option value="Cap Forward">Cap Forward</option>
+                    <option value="Clown Hair Green">Clown Hair Green</option>
+                    <option value="Cowboy Hat">Cowboy Hat</option>
+                    <option value="Crazy Hair">Crazy Hair</option>
+                    <option value="Dark Hair">Dark Hair</option>
                     <option value="Do-rag">Do-rag</option>
                     <option value="Fedora">Fedora</option>
-                    <option value="Frumpy-Hair">Frumpy Hair</option>
-                    <option value="Half-Shaved">Half Shaved</option>
+                    <option value="Frumpy Hair">Frumpy Hair</option>
+                    <option value="Half Shaved">Half Shaved</option>
                     <option value="Headband">Headband</option>
                     <option value="Hoodie">Hoodie</option>
-                    <option value="Knitted-Cap">Knitted Cap</option>
-                    <option value="Messy-Hair">Messy Hair</option>
+                    <option value="Knitted Cap">Knitted Cap</option>
+                    <option value="Messy Hair">Messy Hair</option>
                     <option value="Mohawk">Mohawk</option>
-                    <option value="Mohawk-Dark">Mohawk Dark</option>
-                    <option value="Mohawk-Thin">Mohawk Thin</option>
-                    <option value="Orange-Side">Orange Side</option>
-                    <option value="Peak-Spike">Peak Spike</option>
+                    <option value="Mohawk Dark">Mohawk Dark</option>
+                    <option value="Mohawk Thin">Mohawk Thin</option>
+                    <option value="Orange Side">Orange Side</option>
+                    <option value="Peak Spike">Peak Spike</option>
                     <option value="Pigtails">Pigtails</option>
-                    <option value="Pilot-Helmet">Pilot Helmet</option>
-                    <option value="Pink-With-Hat">Pink With Hat</option>
-                    <option value="Police-Cap">Police Cap</option>
-                    <option value="Purple-Hair">Purple Hair</option>
-                    <option value="Red-Mohawk">Red Mohawk</option>
-                    <option value="Shaved-Head">Shaved Head</option>
-                    <option value="Straight-Hair">Straight Hair</option>
-                    <option value="Straight-Hair-Blonde">Straight Hair Blonde</option>
-                    <option value="Straight-Hair-Dark">Straight Hair Dark</option>
-                    <option value="Stringy-Hair">Stringy Hair</option>
-                    <option value="Tassle-Hat">Tassle Hat</option>
+                    <option value="Pilot Helmet">Pilot Helmet</option>
+                    <option value="Pink With Hat">Pink With Hat</option>
+                    <option value="Police Cap">Police Cap</option>
+                    <option value="Purple Hair">Purple Hair</option>
+                    <option value="Red Mohawk">Red Mohawk</option>
+                    <option value="Shaved Head">Shaved Head</option>
+                    <option value="Straight Hair">Straight Hair</option>
+                    <option value="Straight Hair Blonde">Straight Hair Blonde</option>
+                    <option value="Straight Hair Dark">Straight Hair Dark</option>
+                    <option value="Stringy Hair">Stringy Hair</option>
+                    <option value="Tassle Hat">Tassle Hat</option>
                     <option value="Tiara">Tiara</option>
-                    <option value="Top-Hat">Top Hat</option>
-                    <option value="Vampire-Hair">Vampire Hair</option>
-                    <option value="Wild-Blonde">Wild Blonde</option>
-                    <option value="Wild-Hair">Wild Hair</option>
-                    <option value="Wild-White-Hair">Wild White Hair</option>
+                    <option value="Top Hat">Top Hat</option>
+                    <option value="Vampire Hair">Vampire Hair</option>
+                    <option value="Wild Blonde">Wild Blonde</option>
+                    <option value="Wild Hair">Wild Hair</option>
+                    <option value="Wild White Hair">Wild White Hair</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -414,10 +382,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.hair;
+                          delete updatedState['Hair'];
                           return updatedState;
                         });
-                        setHair("");
                       }}
                       type="button">x</button>
                   </div>
@@ -426,17 +393,15 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={lips}
+                    value={f['Lips']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, lips: e.target.value }));
-                      setLips(e.target.value)
+                      setF((prevState) => ({ ...prevState, Lips: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Lips</option>
-                    <option value="NA">None</option>
-                    <option value="Black-Lipstick">Black Lipstick</option>
-                    <option value="Hot-Lipstick">Hot Lipstick</option>
-                    <option value="Purple-Lipstick">Purple Lipstick</option>
+                    <option value="" disabled hidden>Lips</option>                    
+                    <option value="Black Lipstick">Black Lipstick</option>
+                    <option value="Hot Lipstick">Hot Lipstick</option>
+                    <option value="Purple Lipstick">Purple Lipstick</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -444,7 +409,7 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.lips;
+                          delete updatedState['Lips'];
                           return updatedState;
                         });
                         setLips("");
@@ -456,16 +421,14 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={mouth}
+                    value={f['Mouth']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, mouth: e.target.value }));
-                      setMouth(e.target.value)
+                      setF((prevState) => ({ ...prevState, Mouth: e.target.value }));
                     }}
                     >
-                    <option value="" disabled hidden>Mouth</option>
-                    <option value="NA">None</option>
+                    <option value="" disabled hidden>Mouth</option>                    
                     <option value="Cigarette">Cigarette</option>
-                    <option value="Medical-Mask">Medical Mask</option>
+                    <option value="Medical Mask">Medical Mask</option>
                     <option value="Pipe">Pipe</option>
                     <option value="Vape">Vape</option>
                   </select>
@@ -475,10 +438,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.mouth;
+                          delete updatedState['Mouth'];
                           return updatedState;
                         });
-                        setMouth("");
                       }} 
                       type="button">x</button>
                   </div>
@@ -487,17 +449,16 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={neck}
+                    value={f['Neck']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, neck: e.target.value }));
+                      setF((prevState) => ({ ...prevState, Neck: e.target.value }));
                       setNeck(e.target.value)
                     }}
                   >
-                    <option value="" disabled hidden>Neck</option>
-                    <option value="NA">None</option>
+                    <option value="" disabled hidden>Neck</option>                    
                     <option value="Choker">Choker</option>
-                    <option value="Gold-Chain">Gold Chain</option>
-                    <option value="Silver-Chain">Silver Chain</option>
+                    <option value="Gold Chain">Gold Chain</option>
+                    <option value="Silver Chain">Silver Chain</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -505,10 +466,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.neck;
+                          delete updatedState['Neck'];
                           return updatedState;
                         });
-                        setNeck("");
                       }}
                       type="button">x</button>
                   </div>
@@ -517,15 +477,13 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={nose}
+                    value={f['Nose']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, nose: e.target.value }));
-                      setNose(e.target.value)
+                      setF((prevState) => ({ ...prevState, Nose: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Nose</option>
-                    <option value="NA">None</option>
-                    <option value="Clown-Nose">Clown Nose</option>
+                    <option value="" disabled hidden>Nose</option>                    
+                    <option value="Clown Nose">Clown Nose</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -533,7 +491,7 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.nose;
+                          delete updatedState['Nose'];
                           return updatedState;
                         });
                         setNose("");
@@ -545,10 +503,9 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={sex}
+                    value={f['Sex']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, sex: e.target.value }));
-                      setSex(e.target.value)
+                      setF((prevState) => ({ ...prevState, Sex: e.target.value }));
                     }}
                   >
                     <option value="" disabled hidden>Sex</option>
@@ -564,10 +521,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.sex;
+                          delete updatedState['Sex'];
                           return updatedState;
                         });
-                        setSex("");
                       }} 
                       type="button">x</button>
                   </div>
@@ -576,15 +532,13 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={teeth}
+                    value={f['Teeth']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, teeth: e.target.value }));
-                      setTeeth(e.target.value)
+                      setF((prevState) => ({ ...prevState, Teeth: e.target.value }));
                     }}
                   >
-                    <option value="" disabled hidden>Teeth</option>
-                    <option value="NA">None</option>
-                    <option value="Buck-Teeth">Buck Teeth</option>
+                    <option value="" disabled hidden>Teeth</option>                    
+                    <option value="Buck Teeth">Buck Teeth</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -592,7 +546,7 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.teeth;
+                          delete updatedState['Teeth'];
                           return updatedState;
                         });
                         setTeeth("");
@@ -604,21 +558,20 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={traits}
+                    value={f['Traits']||''}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, traits: e.target.value }));
-                      setTraits(e.target.value)
+                      setF((prevState) => ({ ...prevState, Traits: e.target.value }));
                     }}
                   >
                     <option value="" disabled hidden>Trait Count</option>
-                    <option value="0">0 Trait</option>
-                    <option value="1">1 Trait</option>
-                    <option value="2">2 Traits</option>
-                    <option value="3">3 Traits</option>
-                    <option value="4">4 Traits</option>
-                    <option value="5">5 Traits</option>
-                    <option value="6">6 Traits</option>
-                    <option value="7">7 Traits</option>
+                    <option value="1">0 Trait</option>
+                    <option value="2">1 Trait</option>
+                    <option value="3">2 Traits</option>
+                    <option value="4">3 Traits</option>
+                    <option value="5">4 Traits</option>
+                    <option value="6">5 Traits</option>
+                    <option value="7">6 Traits</option>
+                    <option value="8">7 Traits</option>
                   </select>
                   <div className="input-group-append">
                     <button 
@@ -626,10 +579,9 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.traits;
+                          delete updatedState['Traits'];
                           return updatedState;
                         });
-                        setTraits("");
                       }} 
                       type="button">x</button>
                   </div>
