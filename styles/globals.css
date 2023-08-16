@@ -197,7 +197,7 @@ select, option, .black-txt {
   margin: 1em 1em 0 0;
 }
 
-#view, #hide, .sorter {
+#view, #hide, #asc, #desc, .sorter {
   border: solid 1px #83dfb2;
   /*border-radius: 8px;*/
   padding: 2px 6px;
