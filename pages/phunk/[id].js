@@ -1,6 +1,7 @@
 import { React, useState } from 'react'
 import Router, { useRouter } from 'next/router'
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk"
+import { useSigner } from "@thirdweb-dev/react"
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import Footer from '../../components/Footer'
@@ -9,6 +10,7 @@ import getTxnHistory from '../../hooks/TxnHistory'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
+import Client from '../../utils/myKey'
 
 export default function V3Phunks() {
   //json of phunk atts
@@ -10026,6 +10028,10 @@ export default function V3Phunks() {
   const [bidActive, setBidState] = useState(false);
   const [listActive, setListState] = useState(false);
   const { transactionHistory } = getTxnHistory(collectionContract, id);
+  const [listId, setListId] = useState('');
+  const [listPrice, setListPrice] = useState('');
+  const [bid, setBid] = useState('');
+  const signer = useSigner();
 
   //toggle class
   const bidToggle = () => {
@@ -10059,7 +10065,9 @@ export default function V3Phunks() {
     if(typeof(thisPhunk[0])!=='undefined'){
       const bids = await contract.getOffers(thisPhunk[0].id);
       const topBid = highOffer(bids);
+      const listingId = thisPhunk[0].id
       setOffers(topBid);
+      setListId(listingId);
     } 
   })();
 
@@ -10070,9 +10078,9 @@ export default function V3Phunks() {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
           const mmp = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = mmp.getSigner(accounts[0]);       
-          const address = await signer.getAddress();
-          setConnectedAddress(address); // Update the state with the connected address
+          const signr = mmp.getSigner(accounts[0]);       
+          const address = await signr.getAddress();
+          setConnectedAddress(address); 
         } catch (error) {
           console.log('MetaMask not found or error:', error);
         }
@@ -10094,6 +10102,50 @@ export default function V3Phunks() {
     const o = await v3.ownerOf(id).then(new Response);
     setOwner(o);
   })()
+
+  //start contract interactions
+  async function buy() {
+    const contract = await sdk.getContract("0x8aC28C421d2CB0CbE06d47D617314159247Cd2dc", "marketplace");
+    await contract.buyoutListing(listId, 1)
+  }
+
+  async function bid() {
+    const txResult = await contract.offers.makeOffer({
+      assetContractAddress: collectionContract,
+      tokenId: id,
+      totalPrice: bid,
+    });
+  }
+
+  async function cancelBid() {
+    const connectedWalletOffer = await contract.offers.getAllValid({
+      offeror: connectedAddress,
+      tokenId: id,
+      tokenContract: collectionContract,
+    });
+    const cancelThisBid = connectedWalletOffer[0].id;
+    const txResult = await contract.offers.cancelOffer(cancelThisBid);
+  }
+
+  async function list() {
+    const listing = {
+      assetContractAddress: collectionContract,
+      tokenId: id,
+      buyoutPricePerToken: listPrice,
+    }
+    const tx = await contract.direct.createListing(listing);
+  }
+
+  async function delist() {
+    const txResult = await contract.directListings.cancelListing(listId);
+  }
+
+  async function acceptBid() {
+    const txResult = await contract.direct.acceptOffer(
+      listId,
+      offers[0].buyerAddress,
+    );
+  }
   
   return (
     <>
@@ -10172,14 +10224,18 @@ export default function V3Phunks() {
                     :
                     <><button 
                       className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      //onClick="buyPhunk();"
+                      onClick={buy}
                       id="buy-btn">BUY</button><br/></>
                   }
+                  { !connectedAddress ? 
+                    null
+                    :
                     <button 
                       className="v3-bg black-txt w-full p-1 my-2 brite" 
                       onClick={bidToggle}
                       id="bid-btn-togl">BID
                     </button>
+                  }
                   <br/>
                   <div className={bidActive ? '' : 'hidden'} id="enter-bid-amount">
                     <input
@@ -10188,17 +10244,19 @@ export default function V3Phunks() {
                       name="bid-amt" 
                       placeholder="bid amount"
                       min="0"
-                      id="bid-amt"/>
+                      id="bid-amt"
+                      onChange={(e) => setBid((prevState) => ({ ...prevState, e.target.value }))}
+                    />
                     <br/>
                     <button 
                       className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                      //onClick="bidOnPhunk();"
+                      onClick={bid}
                       id="place-bid-btn">PLACE BID</button>
                   </div>
                   {offers.length === 1 && offers[0].buyerAddress === connectedAddress ?
                     <button 
                       className="v3-bg black-txt w-full p-1 my-2 brite"
-                      //onClick="cancelPhunkBid()"
+                      onClick={cancelBid}
                       id="cxl-bid-btn">
                       CANCEL BID
                     </button>
@@ -10222,11 +10280,13 @@ export default function V3Phunks() {
                           name="sell-amt" 
                           placeholder="list price"
                           min="0"
-                          id="sell-amt"/>
+                          id="sell-amt"
+                          onChange={(e) => setListPrice((prevState) => ({ ...prevState, e.target.value }))}
+                        />
                         <br/>
                         <button 
                           className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                          //onClick="offerPhunkForSale();"
+                          onClick={list}
                           >LIST</button>
                       </div>
                     </>
@@ -10234,7 +10294,7 @@ export default function V3Phunks() {
                     <>
                       <button 
                         className="v3-bg black-txt w-full p-1 my-2 brite" 
-                        //onClick="delistPhunk();"
+                        onClick={delist}
                         id="delist-btn">DELIST</button>
                       <br/>
                     </>
@@ -10244,7 +10304,7 @@ export default function V3Phunks() {
                     :
                     <button 
                       className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      //onClick="acceptBidForPhunk();"
+                      onClick={acceptBid}
                       id="accept-bid-btn">
                       ACCEPT BID
                     </button>
