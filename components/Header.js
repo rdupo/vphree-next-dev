@@ -4,7 +4,6 @@ import Logo from '../assets/vphree24.png'
 import Wallet from '../assets/wallet.png'
 import Profile from '../assets/profile-icon.png'
 import Discord from '../assets/discord.png'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { ethers } from 'ethers'
 
 const Header = () => {

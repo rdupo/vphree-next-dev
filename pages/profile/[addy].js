@@ -1,6 +1,5 @@
 import { React, useState, useEffect } from 'react'
 import Router, { useRouter } from 'next/router'
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import Card from '../../components/Card'
@@ -15,7 +14,6 @@ export default function V3Phunks() {
   const router = useRouter()
   const walletAddy = router.query.addy
   const [nfts, setNFTs] = useState([]);
-  const sdk = new ThirdwebSDK("goerli");
   const fallbackProvider = new ethers.providers.JsonRpcProvider('https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
 
   useEffect(() => {
