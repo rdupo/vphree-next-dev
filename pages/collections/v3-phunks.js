@@ -116,6 +116,8 @@ export default function V3Phunks() {
                          ...initialPhunkBoughtEvents, 
                          ...initialphunkNoLongerForSaleEvents]
 
+      console.log(allEvents)
+
       // Sort the initialPhunkOfferedEvents by phunkIndex and blockNumber (newest to oldest)
       allEvents.sort((a, b) => {
         return b.blockNumber - a.blockNumber; // Sort by blockNumber if phunkIndexes are equal

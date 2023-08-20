@@ -1,7 +1,5 @@
 import { React, useState } from 'react'
 import Router, { useRouter } from 'next/router'
-import { ThirdwebSDK } from "@thirdweb-dev/sdk"
-import { useSigner } from "@thirdweb-dev/react"
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import Footer from '../../components/Footer'
@@ -10,7 +8,6 @@ import getTxnHistory from '../../hooks/TxnHistory'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
-import Client from '../../utils/myKey'
 
 export default function V3Phunks() {
   //json of phunk atts
@@ -10021,7 +10018,6 @@ export default function V3Phunks() {
   const atts = phunks[id]
   const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
   const marketContract = "0x101F2256ba4db70F2659DC9989e0eAFb4Fd53829"
-  const sdk = new ThirdwebSDK("goerli");
   const [listed, setListed] = useState([]);
   const [offers, setOffers] = useState([]);
   const [connectedAddress, setConnectedAddress] = useState('');  
@@ -10261,7 +10257,7 @@ export default function V3Phunks() {
                       placeholder="bid amount"
                       min="0"
                       id="bid-amt"
-                      onChange={(e) => setBid((prevState) => ({ ...prevState, e.target.value }))}
+                      onChange={(e) => setBid(e.target.value )}
                     />
                     <br/>
                     <button 
@@ -10297,7 +10293,7 @@ export default function V3Phunks() {
                           placeholder="list price"
                           min="0"
                           id="sell-amt"
-                          onChange={(e) => setListPrice((prevState) => ({ ...prevState, e.target.value }))}
+                          onChange={(e) => setListPrice(e.target.value)}
                         />
                         <br/>
                         <button 
