@@ -35,7 +35,7 @@ export default function V3Phunks() {
         	<h1 className="v3-txt mr-auto text-5xl">
             {walletAddy.substr(0,4) + "..." + walletAddy.substr(walletAddy.length - 4, walletAddy.length)}
           </h1>
-        	<div className="flex flex-wrap justify-center">
+        	<div className="flex flex-wrap justify-left">
 	            {nfts.map((nftId) => (
 	            	(typeof(nftId) != 'undefined' ?
 	                <Card
