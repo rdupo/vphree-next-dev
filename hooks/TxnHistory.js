@@ -43,18 +43,18 @@ const getTxnHistory = (contractAddress, id) => {
 
       // Transform functions     
       // Filters for contract events
-      const filterList = marketplaceContract.filters.ListingAdded(null, null, null, null);
-      const filterDelist = marketplaceContract.filters.ListingRemoved(null, null);
-      const filterOffer = marketplaceContract.filters.NewOffer(null, null, null, null, null, null);
-      const filterSale = marketplaceContract.filters.NewSale(null, null, null, null, null, null);
+      //const filterDelist = marketplaceContract.filters.ListingRemoved(id);
+      const filterList = marketplaceContract.filters.PhunkOffered(id, null, null);
+      const filterOffer = marketplaceContract.filters.PhunkBidEntered(id, null, null);
+      const filterSale = marketplaceContract.filters.PhunkBought(id, null, null, null);
       const filterV3 = nftContract.filters.Transfer(null, null, id);
 
       // Fetch events from marketplace contract
+      //const Delist = await marketplaceContract.queryFilter(filterDelist);
       const List = await marketplaceContract.queryFilter(filterList);
-      const Delist = await marketplaceContract.queryFilter(filterDelist);
       const Offer = await marketplaceContract.queryFilter(filterOffer);
       const Sale = await marketplaceContract.queryFilter(filterSale);
-      const marketplaceEvents = [...List, ...Delist, ...Offer, ...Sale];
+      const marketplaceEvents = [...List, ...Offer, ...Sale];
 
       // Fetch events from NFT contract
       const nftEvents = await nftContract.queryFilter(filterV3);
@@ -68,12 +68,12 @@ const getTxnHistory = (contractAddress, id) => {
       combinedEvents.push(transformedMarketplaceEvent, transformedNFTEvent);
 
       // Filter marketplace events by token ID
-      const filteredEvents = combinedEvents.filter(event => {
+      /*const filteredEvents = combinedEvents.filter(event => {
         return event.tokenId === id;
-      });
+      });*/
 
       // Sort combinedEvents array by timestamp
-      filteredEvents.sort((a, b) => a.timestamp - b.timestamp);
+      combinedEvents.sort((a, b) => a.timestamp - b.timestamp);
       //console.log(filteredEvents);
   
       const formattedEvents = filteredEvents.map(event => {
@@ -83,11 +83,13 @@ const getTxnHistory = (contractAddress, id) => {
         }
         else if (event.eventType === 'Transfer') {
           eventType = 'Transfer';
-        } else if (event.eventType === 'ListingAdded') {
+        } else if (event.eventType === 'PhunkOffered') {
           eventType = 'Listed';
-        } else if (event.eventType === 'NewSale') {
+        } else if (event.eventType === 'PhunkBought') {
           eventType = 'Sold';
-        } 
+        } else if (event.eventType === 'PhunkBidEntered') {
+          eventType = 'Offer'
+        }
 
         return {
           from: event.from,
@@ -101,7 +103,7 @@ const getTxnHistory = (contractAddress, id) => {
     };
 
     fetchTransactionHistory();
-  }, [contractAddress, '0x8aC28C421d2CB0CbE06d47D617314159247Cd2dc']);
+  }, [contractAddress, '0x101F2256ba4db70F2659DC9989e0eAFb4Fd53829']);
 
   return { transactionHistory };
 };
