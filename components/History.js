@@ -16,22 +16,46 @@ const History = ({ transactions }) => {
         <tbody>
           {transactions.map((transaction, index) => (
             <tr key={index}>
-              <td>
-                {transaction.eventType}
-              </td>
-              <td>
-                {transaction.from.substr(0,4) +
-                '...' + 
-                transaction.from.substr(transaction.from.length - 4, transaction.from.length)}
-              </td>
-              <td>
-                {transaction.to.length > 0 ? transaction.to.substr(0,4) +
-                '...' + 
-                transaction.to.substr(transaction.to.length - 4, transaction.to.length) : "---"}
-              </td>
-              <td>
-                {transaction.amount > 0 ? transaction.amount + "Ξ" : "---"}
-              </td>
+              {typeof(transaction.eventType) !== 'undefined' ?
+                <td>
+                  {transaction.eventType}
+                </td>
+                : 
+                <td>
+                  ---
+                </td>
+              }
+              {typeof(transaction.from) !== 'undefined' ?
+                <td>
+                  {transaction.from.substr(0,4) +
+                  '...' + 
+                  transaction.from.substr(transaction.from.length - 4, transaction.from.length)}
+                </td>
+                :
+                <td>
+                  ---
+                </td>
+              }
+              {typeof(transaction.to) !== 'undefined' ?
+                <td>
+                  {transaction.to.length > 0 ? transaction.to.substr(0,4) +
+                  '...' + 
+                  transaction.to.substr(transaction.to.length - 4, transaction.to.length) : "---"}
+                </td>
+                :
+                <td>
+                  ---
+                </td>
+              }
+              {typeof(transaction.amount) !== 'undefined' ?                
+                <td>
+                  {transaction.amount > 0 ? transaction.amount + "Ξ" : "---"}
+                </td>
+                :
+                <td>
+                  ---
+                </td>
+              }
             </tr>
           ))}
         </tbody>
