@@ -10033,9 +10033,10 @@ export default function V3Phunks() {
   const [listId, setListId] = useState('');
   const [listPrice, setListPrice] = useState('');
   const [bid, setBid] = useState('');
+  const [signer, setSigner] = useState([]);
   const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL);
-  const [v3, setV3] = useState(new ethers.Contract(collectionContract, v3Abi, provider));
-  const [market, setMarket] = useState(new ethers.Contract(marketContract, marketAbi, provider)); //this is also defined as 'contract' within a function below; reconcile that!!!
+  const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
+  const market = new ethers.Contract(marketContract, marketAbi, provider);
 
   //toggle class
   const bidToggle = () => {
@@ -10048,6 +10049,7 @@ export default function V3Phunks() {
 
   //get listing info and bid info, if they exist
     useEffect(() => {
+    //connectWallet();
     fetchDataWithRetry();
   }, [id]);
 
@@ -10059,22 +10061,27 @@ export default function V3Phunks() {
 
     while (retries < maxRetries && !success) {
       try {
-        const o = await v3.ownerOf(id).then(new Response);
-        setOwner(o);
+        try {
+          const o = await v3.ownerOf(id).then(new Response);
+          setOwner(o);
+        } catch (error) {  }
 
-        const listing = await market.phunksOfferedForSale(id);
-        setListed(listing);
+        try {
+          const listing = await market.phunksOfferedForSale(id);
+          setListed(listing);
+        } catch (error) {  }
 
-        const bids = await market.phunkBids(id);
-        const topBid = bids.value;
-        if (topBid > 0) {
-          setOffers(topBid);
-          setOfferer(bids.bidder);
-        }
+        try {
+          const bids = await market.phunkBids(id);
+          const topBid = bids.value;
+          if (topBid > 0) {
+            setOffers(topBid);
+            setOfferer(bids.bidder);
+          }
+        } catch (error) {  }
 
         success = true; // Data fetched successfully
       } catch (error) {
-        console.error('Error fetching data:', error);
         retries++;
         await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
       }
@@ -10087,28 +10094,27 @@ export default function V3Phunks() {
   };
 
   //get connected wallet
-  (async () => {
+  const connectedWallet = async () => {
     if (window.ethereum) {
       if (await window.ethereum.isConnected()) {          
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
           const mmp = new ethers.providers.Web3Provider(window.ethereum);
-          const signr = mmp.getSigner(accounts[0]);       
+          const signr = mmp.getSigner(accounts[0]); 
+          setSigner(signr)
           const address = await signr.getAddress();
           setConnectedAddress(address); 
-          setV3(new ethers.Contract(collectionContract, v3Abi, signr));
-          setMarket(new ethers.Contract(marketContract, marketAbi, signr));
         } catch (error) {
           console.log('MetaMask not found or error:', error);
         }
       }
     }
-  })();
+  };
 
   //contract interactions
   // list
   async function list() {
-    const ap = await v3.isApprovedForAll(connectedAddress, marketContract);
+    /*const ap = await v3.isApprovedForAll(connectedAddress, marketContract);
     if (ap) {
       const ethPrice = ethers.utils.parseEther(listPrice);
       const lPrice = parseInt(ethPrice._hex);
@@ -10121,48 +10127,50 @@ export default function V3Phunks() {
       const lPrice = parseInt(ethPrice._hex);
       const listPromise = market.offerPhunkForSale(id, lPrice);
       await listPromise;
-    };
+    };*/
   }
 
   // delist
   async function delist() {
-    const delistPromise = market.phunkNoLongerForSale(id);
-    await delistPromise;
+    /*const delistPromise = market.phunkNoLongerForSale(id);
+    await delistPromise;*/
   }
 
   // accept bid
   async function acceptBid() {
-    const setApproval = await collectionContract.setApprovalForAll('', true);
+    /*const setApproval = await collectionContract.setApprovalForAll('', true);
     await setApproval.wait();
     const c = await market.phunkBids(id).then(new Response);
     const bidPrice = c.value._hex;
     const acceptBidPromise = market.acceptBidForPhunk(id, bidPrice);
-    await acceptBidPromise;
+    await acceptBidPromise;*/
   }
 
   // buy
   async function buy() {
-    const cpmarket = new ethers.Contract(marketContract, marketAbi, signer)
-    const res = await cpmarket.phunksOfferedForSale(id).then(function(response) {
-        return response;
-      });
-    const minVal = res['minValue']._hex
-    const buyPhunkPromise = await cpmarket.buyPhunk(id, {value: minVal});
-    await buyPhunkPromise.wait();
+    if(signer._isSigner){
+      console.log(listed)
+      //const mp = new _ethers.Contract(marketContract, marketAbi, signer)
+      //const buyPhunkPromise = await mp.connect(signer).buyPhunk(listed.phunkIndex._hex, {value: listed.minValue._hex});
+      //await buyPhunkPromise.wait();
+    } else {
+      console.log('need to connect wallet')
+    }
   }
 
   // place bid
   async function bidOn() {
-    const ethBid = ethers.utils.parseEther(bid);
+    /*const ethBid = ethers.utils.parseEther(bid);
     const bidVal = parseInt(ethBid._hex);
     const enterBidPromise = market.enterBidForPhunk(id, {value: bidVal});
-    await enterBidPromise;  
+    await enterBidPromise;*/
+    console.log('bid: ', bid)
   }
 
   // cancel bid
   async function cancelBid() {
-    const withdrawBidPromise = market.withdrawBidForPhunk(id);
-    await withdrawBidPromise;
+    /*const withdrawBidPromise = market.withdrawBidForPhunk(id);
+    await withdrawBidPromise;*/
   }
   
   return (
