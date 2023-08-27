@@ -1,4 +1,5 @@
-import { React, useState } from 'react'
+import { React, useState, useEffect } from 'react'
+import Router, { useRouter } from 'next/router'
 import Image from 'next/image'
 import Logo from '../assets/vphree24.png'
 import Wallet from '../assets/wallet.png'
@@ -7,6 +8,7 @@ import Discord from '../assets/discord.png'
 import { ethers } from 'ethers'
 
 const Header = () => {
+	const router = useRouter();
   const [connectedAddress, setConnectedAddress] = useState('');
 
   async function connectWallet() {
@@ -22,6 +24,27 @@ const Header = () => {
       }
     }
   }
+
+  //get connected wallet
+  const connectedWallet = async () => {
+    if (window.ethereum) {
+      if (await window.ethereum.isConnected()) {          
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const mmp = new ethers.providers.Web3Provider(window.ethereum);
+          const signr = mmp.getSigner(accounts[0]); 
+          const address = await signr.getAddress();
+          setConnectedAddress(address); 
+        } catch (error) {
+          console.log('MetaMask not found or error:', error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    connectedWallet();
+  }, []);
 
 	return 	(
 		<div className="v3-txt black-bg flex">
@@ -52,14 +75,16 @@ const Header = () => {
 					alt="connect wallet icon"
 					onClick={connectWallet}
 				/>
-				<a href="/profile">
+				{ connectedAddress.length === 0 ?
+					null : 
 					<Image
 						height={40}
 						className="inline-flex align-middle my-3 mr-8 h-img brite" 
 						src={Profile}
 						alt="profile icon"
+						onClick={() => {Router.push({pathname: `/profile/${connectedAddress}`})}}
 					/>
-				</a>
+				}
 			</div>
 		</div>
 	)

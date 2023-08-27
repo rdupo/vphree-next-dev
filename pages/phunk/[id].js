@@ -10029,12 +10029,11 @@ export default function V3Phunks() {
   const [owner, setOwner] = useState('');
   const [bidActive, setBidState] = useState(false);
   const [listActive, setListState] = useState(false);
-  const { transactionHistory } = getTxnHistory(collectionContract, id);
-  const [listId, setListId] = useState('');
+  const { transactionHistory } = getTxnHistory(id);
   const [listPrice, setListPrice] = useState('');
   const [bid, setBid] = useState('');
   const [signer, setSigner] = useState([]);
-  const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL, 5);
   const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
   const market = new ethers.Contract(marketContract, marketAbi, provider);
 
@@ -10049,9 +10048,9 @@ export default function V3Phunks() {
 
   //get listing info and bid info, if they exist
     useEffect(() => {
-    //connectWallet();
-    fetchDataWithRetry();
-  }, [id]);
+      connectedWallet();
+      fetchDataWithRetry();
+    }, [id]);
 
   // Function to fetch data with retry
   const fetchDataWithRetry = async () => {
@@ -10101,8 +10100,8 @@ export default function V3Phunks() {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
           const mmp = new ethers.providers.Web3Provider(window.ethereum);
           const signr = mmp.getSigner(accounts[0]); 
-          setSigner(signr)
           const address = await signr.getAddress();
+          setSigner(signr)
           setConnectedAddress(address); 
         } catch (error) {
           console.log('MetaMask not found or error:', error);
@@ -10111,66 +10110,143 @@ export default function V3Phunks() {
     }
   };
 
+  //connect wallet, if needed
+  async function connectWallet() {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const mmp = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = mmp.getSigner(accounts[0]);       
+        const address = await signer.getAddress();
+        setConnectedAddress(address); 
+        setSigner(signr);
+      } catch (error) {
+        console.log('MetaMask not found or error:', error);
+      }
+    }
+  };
+
   //contract interactions
-  // list
-  async function list() {
-    /*const ap = await v3.isApprovedForAll(connectedAddress, marketContract);
+  //withdraw() function - DELETE 
+  async function withdrawMyEth() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const withdrawPromise = cpmp.withdraw();
+    await withdrawPromise;
+  };
+
+  async function listPhunk() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const cc = new ethers.Contract(collectionContract, v3Abi, signer);
+    const ap = await v3.isApprovedForAll(connectedAddress, marketContract);
     if (ap) {
-      const ethPrice = ethers.utils.parseEther(listPrice);
-      const lPrice = parseInt(ethPrice._hex);
+      const lPrice = ethers.utils.parseUnits(listPrice, 'ether');
       const listPromise = market.offerPhunkForSale(id, lPrice);
       await listPromise;
     } else {
-      const setApproval = await collectionContract.setApprovalForAll(marketContract, true);
+      const setApproval = await cc.setApprovalForAll(cpmp, true);
       await setApproval.wait();
-      const ethPrice = ethers.utils.parseEther(listPrice);
-      const lPrice = parseInt(ethPrice._hex);
+      const lPrice = ethers.utils.parseUnits(listPrice, 'ether');
       const listPromise = market.offerPhunkForSale(id, lPrice);
       await listPromise;
-    };*/
+    };
+  }
+
+  async function delistPhunk() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const delistPromise = cpmp.phunkNoLongerForSale(id);
+    await delistPromise; 
+  }
+
+  async function acceptPhunkBid() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const cc = new ethers.Contract(collectionContract, v3Abi, signer);
+    const setApproval = await cc.setApprovalForAll('', true);
+    await setApproval.wait();
+    const c = await cpmp.phunkBids(id).then(new Response);
+    const bidPrice = c.value._hex;
+    const acceptBidPromise = cpmp.acceptBidForPhunk(id, bidPrice);
+    await acceptBidPromise;
+  }
+
+  async function buyPhunk() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const buyPhunkPromise = await cpmp.connect(signer).buyPhunk(id, {value: listed.minValue._hex});
+    await buyPhunkPromise.wait();
+  }
+
+  async function bidOnPhunk() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const ethBid = ethers.utils.parseUnits(bid, 'ether');
+    const enterBidPromise = cpmp.enterBidForPhunk(id, {value: ethBid});
+    await enterBidPromise;
+  }
+
+  async function cancelPhunkBid() {
+    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
+    const withdrawBidPromise = cpmp.withdrawBidForPhunk(id);
+    await withdrawBidPromise;  
+  }
+
+  // onClick functions
+  // list
+  async function list() {
+    if(signer._isSigner) {
+      listPhunk()
+    } else {
+      connectWallet()
+      listPhunk()
+    }
   }
 
   // delist
   async function delist() {
-    /*const delistPromise = market.phunkNoLongerForSale(id);
-    await delistPromise;*/
+    if(signer._isSigner) {
+      delistPhunk()
+    } else {
+      connectWallet()
+      delistPhunk()
+    }
   }
 
   // accept bid
   async function acceptBid() {
-    /*const setApproval = await collectionContract.setApprovalForAll('', true);
-    await setApproval.wait();
-    const c = await market.phunkBids(id).then(new Response);
-    const bidPrice = c.value._hex;
-    const acceptBidPromise = market.acceptBidForPhunk(id, bidPrice);
-    await acceptBidPromise;*/
+    if(signer._isSigner) {
+      acceptPhunkBid()
+    } else {
+      connectWallet()
+      acceptPhunkBid()
+    }
   }
 
   // buy
   async function buy() {
+    console.log('signer: ', signer)
     if(signer._isSigner){
-      console.log(listed)
-      //const mp = new _ethers.Contract(marketContract, marketAbi, signer)
-      //const buyPhunkPromise = await mp.connect(signer).buyPhunk(listed.phunkIndex._hex, {value: listed.minValue._hex});
-      //await buyPhunkPromise.wait();
+      buyPhunk()
     } else {
-      console.log('need to connect wallet')
+      connectWallet()
+      buyPhunk()
     }
   }
 
   // place bid
   async function bidOn() {
-    /*const ethBid = ethers.utils.parseEther(bid);
-    const bidVal = parseInt(ethBid._hex);
-    const enterBidPromise = market.enterBidForPhunk(id, {value: bidVal});
-    await enterBidPromise;*/
-    console.log('bid: ', bid)
+    if(signer._isSigner) {
+      bidOnPhunk()
+    } else {
+      connectWallet()
+      bidOnPhunk()
+    }
   }
 
   // cancel bid
   async function cancelBid() {
-    /*const withdrawBidPromise = market.withdrawBidForPhunk(id);
-    await withdrawBidPromise;*/
+    if(signer._isSigner) {
+      cancelPhunkBid()
+    } else {
+      connectWallet()
+      cancelPhunkBid()
+    }
   }
   
   return (
@@ -10235,7 +10311,7 @@ export default function V3Phunks() {
                   </>
                 }
               </div>
-              {connectedAddress ? 
+              {connectedAddress.length > 0 ? 
                 null :
                 <div 
                   className="p-3 black-bg v3-txt v3-b w-full"  
@@ -10245,7 +10321,7 @@ export default function V3Phunks() {
               }
               {connectedAddress !== owner ?
                 <div className="" id="buy-bid-buttons">
-                  {listed.length === 0 ?
+                  {listed.length === 0 || connectedAddress.length === 0 ?
                     null
                     :
                     <><button 
