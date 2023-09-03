@@ -16,7 +16,7 @@ export default function V3Phunks() {
   const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
   const maps = "https://maps.org/"
   const target = "_blank"
-  const desc = ["V3Phunks are a low entry-point evolution of the CryptoPhunks ecosystem. 10,000 Phunks minting for .005ETH each with absolutely 100% of proceeds going directly and trustlessly to ",<a href={maps} target={target}>MAPS</a>, ", a mental health organization. A Philanthropic, Phree, and Phunky arm of the overall CryptoPhunk community."]
+  const desc = ["V3Phunks are a low entry-point evolution of the CryptoPhunks ecosystem. 10,000 Phunks minting for .005ETH each with absolutely 100% of proceeds going directly and trustlessly to ",<a key='maps' href={maps} target={target}>MAPS</a>, ", a mental health organization. A Philanthropic, Phree, and Phunky arm of the overall CryptoPhunk community."]
   const [listed, setListed] = useState([]);
   const [f, setF] = useState({})
   const [filtersActive, setFilterState] = useState(false)
