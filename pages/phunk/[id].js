@@ -10260,6 +10260,7 @@ export default function V3Phunks() {
               <div id="img-wrapper">
                 <img
                   src={`https://ipfs.io/ipfs/QmaYDjSxjefTzG5BFPF12FM6CK4AjaxBh3WDTnx58CGusE/${id}.png`}
+                  alt={`image of phunk ${id}`}
                 >
                 </img>
               </div>
