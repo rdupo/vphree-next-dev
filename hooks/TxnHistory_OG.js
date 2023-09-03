@@ -31,88 +31,30 @@ const getTxnHistory = (id) => {
     };
 
     const transformMarketplaceEvent = (event) => {         
-      for(let i = 0; i < event.length; i++) {    
-        return {
+      for(let i = 0; i < event.length; i++) {        
+        combinedEvents.push({
           eventType: event[i].event,
-          from: event[i].from,
-          to: event[i].event === 'PhunkOffered' ? '' : event[i].to,
-          amount: ethers.utils.formatUnits(event[i].args.minValue._hex,18),
+          from: txn.from,
+          to: txn.to,
+          amount: typeof(event[i].args.minValue) != 'undefined' ? ethers.utils.formatUnits(event[i].args.minValue._hex,18):ethers.utils.formatUnits(event[i].args.value._hex,18),
           tokenId: ethers.utils.formatUnits(event[i].args.phunkIndex._hex,0),
           timestamp: event[i].blockNumber,
-        }
-      }
-    };
-
-    const transformList = async (event) => {
-      const results = [];
-
-      for (let i = 0; i < event.length; i++) {
-        const txHash = event[i].transactionHash;
-        const txnReceipt = await alchemy.core.getTransactionReceipt(txHash);
-        //console.log('topics: ', txnReceipt.logs[0].topics.length);
-        results.push({
-          eventType: 'PhunkOffered',
-          from: txn.from,
-          to: '',
-          amount: ethers.utils.formatUnits(txnReceipt.logs[0].topics[1]), 
-          tokenId: ethers.utils.formatUnits(txnReceipt.logs[0].topics[0]),
-          timestamp: txn.blockNumber,
+          hash: event[i].transactionHash,
         });
       }
-
-      return results;
-    };
-
-    const transformOffer = async (event) => {
-      const results = [];
-      
-      for (let i = 0; i < event.length; i++) {
-        const txHash = event[i].transactionHash;
-        const txnReceipt = await alchemy.core.getTransactionReceipt(txHash);
-        //console.log('topics: ', txnReceipt.logs[0].topics.length);
-        results.push({
-          eventType: 'PhunkBidEntered',
-          from: txn.from,
-          to: txn.to,
-          amount: ethers.utils.formatUnits(txnReceipt.logs[0].topics[1]),
-          tokenId: ethers.utils.formatUnits(txnReceipt.logs[0].topics[0]),
-          timestamp: txn.blockNumber,
-        });
-      }
-
-      return results;
-    };
-
-    const transformSale = async (event) => {
-      const results = [];
-      
-      for (let i = 0; i < event.length; i++) {
-        const txHash = event[i].transactionHash;
-        const txnReceipt = await alchemy.core.getTransactionReceipt(txHash);
-        //console.log('topics: ', txnReceipt.logs[0].topics.length);
-        results.push({
-          eventType: 'PhunkBought',
-          from: txn.from,
-          to: txn.to,
-          amount: ethers.utils.formatUnits(txnReceipt.logs[0].topics[1]),
-          tokenId: ethers.utils.formatUnits(txnReceipt.logs[0].topics[0]),
-          timestamp: txn.blockNumber, 
-        });
-      }
-
-      return results;
     };
 
     const transformNFTEvent = (event) => {
       for(let i = 0; i < event.length; i++) {          
-        return {
+        combinedEvents.push({
           eventType: event[i].event,
           from: event[i].args.from,
           to: event[i].args.to,
           amount: '',
           tokenId: ethers.utils.formatUnits(event[i].args.tokenId._hex,0),
           timestamp: event[i].blockNumber,
-        };
+          hash: event[i].transactionHash,
+        });
       }
     };
 
@@ -126,22 +68,22 @@ const getTxnHistory = (id) => {
 
     const List = await retry(async () => await marketplaceContract.queryFilter(filterList));
     const Offer = await retry(async () => await marketplaceContract.queryFilter(filterOffer));
+    console.log('hist-offer: ', Offer);
     const Sale = await retry(async () => await marketplaceContract.queryFilter(filterSale));
     const marketplaceEvents = [...List, ...Offer, ...Sale];
-
+    //console.log('mp events', marketplaceEvents)
     const nftEvents = await retry(async () => await nftContract.queryFilter(filterV3));
 
     // Combine all events
     const combinedEvents = [];
-    const transformedMarketplaceEvent = transformMarketplaceEvent(marketplaceEvents);
-    const transformedNFTEvent = transformNFTEvent(nftEvents);
-    combinedEvents.push(transformedMarketplaceEvent, transformedNFTEvent);
-    //console.log('combined', combinedEvents)
+    transformMarketplaceEvent(marketplaceEvents);
+    transformNFTEvent(nftEvents);
+    console.log('combined', combinedEvents)
     
     // Sort combinedEvents array by timestamp
     combinedEvents.sort((a, b) => a.timestamp - b.timestamp);
     const filteredEvents = combinedEvents.filter( i => i.tokenId.includes(id) );
-    //console.log('filtered', filteredEvents)
+    console.log('filtered', filteredEvents)
 
     // Filter out events with the same timestamp as in transactionHistory
     const refilteredEvents = filteredEvents.filter(event => {
@@ -168,6 +110,7 @@ const getTxnHistory = (id) => {
         to: event.to,
         eventType: eventType,
         amount: event.amount,
+        hash: event.hash,
       };
     });
 

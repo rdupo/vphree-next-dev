@@ -3,8 +3,8 @@ import Router, { useRouter } from 'next/router'
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import Footer from '../../components/Footer'
-import History from '../../components/History'
-import getTxnHistory from '../../hooks/TxnHistory'
+import History from '../../components/History_qBC'
+import getTxnHistory from '../../hooks/TxnHistory_OG'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
@@ -10068,6 +10068,7 @@ export default function V3Phunks() {
         try {
           const listing = await market.phunksOfferedForSale(id);
           setListed(listing);
+          //console.log('id-listing: ', listing)
         } catch (error) {  }
 
         try {
@@ -10283,7 +10284,7 @@ export default function V3Phunks() {
             </div>
             <div className="contract-interactions inline-block pr-0 align-top w-4/12">
               <div className="price-and-bid">
-                {listed.length === 0 ?
+                {!listed.isForSale ?
                   null
                   :
                   <p id="price">Price:&nbsp;

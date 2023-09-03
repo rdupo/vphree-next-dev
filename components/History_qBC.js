@@ -9,9 +9,8 @@ const History = ({ transactions }) => {
           <thead>
             <tr className="v3-txt black-bg">
               <th>Event</th>
-              <th>From</th>
-              <th>To</th>
               <th>Amount</th>
+              <th>View Txn</th>
             </tr>
           </thead>
           <tbody>
@@ -26,31 +25,25 @@ const History = ({ transactions }) => {
                     ---
                   </td>
                 }
-                {typeof(transaction.from) !== 'undefined' ?
-                  <td>
-                    {transaction.from.substr(0,4) +
-                    '...' + 
-                    transaction.from.substr(transaction.from.length - 4, transaction.from.length)}
-                  </td>
-                  :
-                  <td>
-                    ---
-                  </td>
-                }
-                {typeof(transaction.to) !== 'undefined' ?
-                  <td>
-                    {transaction.to.length > 0 ? transaction.to.substr(0,4) +
-                    '...' + 
-                    transaction.to.substr(transaction.to.length - 4, transaction.to.length) : "---"}
-                  </td>
-                  :
-                  <td>
-                    ---
-                  </td>
-                }
                 {typeof(transaction.amount) !== 'undefined' ?                
                   <td>
                     {transaction.amount > 0 ? Number(transaction.amount).toFixed(3) + "Ξ" : "---"}
+                  </td>
+                  :
+                  <td>
+                    ---
+                  </td>
+                }
+                {typeof(transaction.hash) !== 'undefined' ?                
+                  <td>
+                    {<a
+                      href={`https://goerli.etherscan.io/tx/${transaction.hash}`}
+                      target='_blank'
+                    >
+                    {transaction.hash.substr(0,4) +
+                    '...' + 
+                    transaction.hash.substr(transaction.hash.length - 4, transaction.hash.length)}
+                    </a>}
                   </td>
                   :
                   <td>
