@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react'
 import Router, { useRouter } from 'next/router'
 import Image from 'next/image'
+import Link from 'next/link'
 import Logo from '../assets/vphree24.png'
 import Wallet from '../assets/wallet.png'
 import Profile from '../assets/profile-icon.png'
@@ -49,7 +50,7 @@ const Header = () => {
 	return 	(
 		<div className="v3-txt black-bg flex">
 			<div className={"mr-auto brite"}>
-				<a href="/" className="sans-underline">
+				<Link href="/" className="sans-underline">
 					<Image
 						height={40} 
 						className="inline-flex align-middle my-3 ml-8 h-img" 
@@ -57,7 +58,7 @@ const Header = () => {
 						alt="vphree logo"
 					/>
 					<h1 className="inline-flex align-middle h-txt ml-2">vphree</h1>
-				</a>
+				</Link>
 			</div>
 			<div className="justify-content-end">
 				<a href="https://discord.gg/phunks" target="_blank" className="sans-underline">
