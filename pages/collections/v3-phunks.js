@@ -649,7 +649,6 @@ export default function V3Phunks() {
                   price={_ethers.utils.formatUnits(phunk.args.minValue._hex,18) + "Ξ"}
                   atts=""
                   id={_ethers.utils.formatUnits(phunk.args.phunkIndex._hex,0)}
-                  key={_ethers.utils.formatUnits(phunk.args.phunkIndex._hex,0)}
                 />
               : null )  
             ))}

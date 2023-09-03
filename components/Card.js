@@ -8,7 +8,6 @@ const Card = ({ price, atts, id }) => {
 			className="brite my-2 black-bg white-txt inline-block sans-underline" 
 			data-price={price} 
 			data-atts={atts}
-			key={id}
 			onClick={() => {Router.push({pathname: `/phunk/${id}`})}}
 		>
 			<div className="img-wrapper v3-bg">
