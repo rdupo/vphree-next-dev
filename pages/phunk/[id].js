@@ -10323,7 +10323,7 @@ export default function V3Phunks() {
               }
               {connectedAddress !== owner ?
                 <div className="" id="buy-bid-buttons">
-                  {listed.length === 0 || connectedAddress.length === 0 ?
+                  {!listed.isForSale || connectedAddress.length === 0 ?
                     null
                     :
                     <><button 
@@ -10370,7 +10370,7 @@ export default function V3Phunks() {
                 </div>
                 :
                 <div className="seller-buttons">
-                  {listed.length === 0 ?
+                  {!listed.isForSale ?
                     <>
                       <button 
                         className="v3-bg black-txt w-full p-1 my-2 brite" 

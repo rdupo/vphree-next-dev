@@ -466,7 +466,6 @@ export default function V3Phunks() {
                           delete updatedState['Lips'];
                           return updatedState;
                         });
-                        setLips("");
                       }}
                       type="button">x</button>
                   </div>
@@ -548,7 +547,6 @@ export default function V3Phunks() {
                           delete updatedState['Nose'];
                           return updatedState;
                         });
-                        setNose("");
                       }}
                       type="button">x</button>
                   </div>
@@ -603,7 +601,6 @@ export default function V3Phunks() {
                           delete updatedState['Teeth'];
                           return updatedState;
                         });
-                        setTeeth("");
                       }}
                       type="button">x</button>
                   </div>
