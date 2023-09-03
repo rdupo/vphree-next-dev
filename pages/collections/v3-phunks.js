@@ -90,7 +90,7 @@ export default function V3Phunks() {
       return (aa - bb);
     });
     setDisplayedData(sortedFilteredData);
-  }, [f]);
+  }, [f, filteredData]);
 
   //events approach
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function V3Phunks() {
       });
     };
     fetchInitialActiveListings();
-  }, []);
+  });
 
   return (
     <>
@@ -646,6 +646,7 @@ export default function V3Phunks() {
             {displayedData.map((phunk) => (
               (displayedData.length > 0 ?
                 <Card
+                  key={phunk.args.phunkIndex._hex}
                   price={_ethers.utils.formatUnits(phunk.args.minValue._hex,18) + "Ξ"}
                   atts=""
                   id={_ethers.utils.formatUnits(phunk.args.phunkIndex._hex,0)}

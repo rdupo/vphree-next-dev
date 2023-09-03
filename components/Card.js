@@ -2,9 +2,10 @@ import React from 'react'
 import Image from 'next/image'
 import Router from 'next/router'
 
-const Card = ({ price, atts, id }) => {
+const Card = ({ key, price, atts, id }) => {
 	return 	(
 		<div 
+			key={key}
 			className="brite my-2 black-bg white-txt inline-block sans-underline" 
 			data-price={price} 
 			data-atts={atts}
