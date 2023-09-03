@@ -90,7 +90,7 @@ export default function V3Phunks() {
       return (aa - bb);
     });
     setDisplayedData(sortedFilteredData);
-  }, [f]);
+  }, [f, filteredData]);
 
   //events approach
   useEffect(() => {
