@@ -113,6 +113,7 @@ export default function V3Phunks() {
 	            {nfts.map((nftId) => (
 	            	(typeof(nftId) != 'undefined' ?
 	                <Card
+                    key={nftId}
 		                price="" 
 		                atts=""
 		                id={nftId}

@@ -10258,11 +10258,12 @@ export default function V3Phunks() {
           <div className="row-wrapper block px-0 my-4">
             <div className="nft-info inline-block pl-0 align-top v3-bg w-full">
               <div id="img-wrapper">
-                <img
+                <Image
                   src={`https://ipfs.io/ipfs/QmaYDjSxjefTzG5BFPF12FM6CK4AjaxBh3WDTnx58CGusE/${id}.png`}
                   alt={`image of phunk ${id}`}
-                >
-                </img>
+                  width={500}
+                  height={500}
+                />
               </div>
             </div>
             <h2 id="title" className="v3-txt mb-3">v3phunk #{id}</h2>
