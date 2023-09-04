@@ -144,7 +144,7 @@ export default function V3Phunks() {
       });
     };
     fetchInitialActiveListings();
-  },[]);
+  },[phunkData]);
 
   return (
     <>

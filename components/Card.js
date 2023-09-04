@@ -12,7 +12,7 @@ const Card = ({ price, atts, id }) => {
 			onClick={() => {Router.push({pathname: `/phunk/${id}`})}}
 		>
 			<div className="img-wrapper v3-bg">
-				<img 
+				<Image 
 					className="w-100" 
 					src={`https://ipfs.io/ipfs/QmaYDjSxjefTzG5BFPF12FM6CK4AjaxBh3WDTnx58CGusE/${id}.png`}
 					loading="lazy" 
