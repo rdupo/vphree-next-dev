@@ -10032,16 +10032,14 @@ export default function V3Phunks() {
   ]
   const [fP, setFP] = useState(phunks)
 
-  // trait and id filtering
-  function filterPhunks() {
-    return phunks.filter(
-      (i) =>
-        Object.entries(f).every(([k, v]) => k === 'tokenId' ? i.tokenId.toString().indexOf(v) > -1 : i[k] === v)
-    );
-  }
-
   // Use the useEffect hook to monitor changes to the 'f' state
   useEffect(() => {
+    function filterPhunks() {
+      return phunks.filter(
+        (i) =>
+          Object.entries(f).every(([k, v]) => k === 'tokenId' ? i.tokenId.toString().indexOf(v) > -1 : i[k] === v)
+      );
+    }
     const filteredPhunks = filterPhunks();
     setFP(filteredPhunks);
     console.log(filteredPhunks);
