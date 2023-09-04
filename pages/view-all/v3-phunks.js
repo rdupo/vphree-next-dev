@@ -10045,7 +10045,7 @@ export default function V3Phunks() {
     const filteredPhunks = filterPhunks();
     setFP(filteredPhunks);
     console.log(filteredPhunks);
-  }, [f,filterPhunks]); // The useEffect hook will run whenever 'f' changes
+  }, [f]); // The useEffect hook will run whenever 'f' changes
 
   //toggle class
   const filterToggle = () => {
