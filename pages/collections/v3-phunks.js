@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from 'react'
-//import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import CollectionInfo from '../../components/CollectionInfo'
@@ -90,7 +89,7 @@ export default function V3Phunks() {
       return (aa - bb);
     });
     setDisplayedData(sortedFilteredData);
-  }, [f, filteredData]);
+  }, [f]);
 
   //events approach
   useEffect(() => {
@@ -145,7 +144,7 @@ export default function V3Phunks() {
       });
     };
     fetchInitialActiveListings();
-  });
+  },[]);
 
   return (
     <>
