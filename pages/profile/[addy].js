@@ -25,7 +25,9 @@ export default function V3Phunks() {
 
   useEffect(() => {
     async function fetchNFTs() {
-      const nftIds = await getNFTs(walletAddy);
+      const thisAddy = router.query.addy
+      const nftIds = await getNFTs(thisAddy);
+      console.log('ids: ', nftIds);
       setNFTs(nftIds);
     }
     fetchNFTs();
@@ -113,7 +115,7 @@ export default function V3Phunks() {
 	            {nfts.map((nftId) => (
 	            	(typeof(nftId) != 'undefined' ?
 	                <Card
-                    key={nftId}
+                    key={`_${nftId}`}
 		                price="" 
 		                atts=""
 		                id={nftId}

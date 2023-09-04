@@ -11,6 +11,8 @@ export async function getNFTs(walletAddy) {
   const filter = contract.filters.Transfer(null, walletAddy); // Filter for Transfer events to the wallet
   const transferEvents = await contract.queryFilter(filter);
 
+  //need to exclude IDs that were transferred out, then de-dupe!!!
+
   const nftIds = transferEvents.map(event => event.args.tokenId.toString());
 
   return nftIds;

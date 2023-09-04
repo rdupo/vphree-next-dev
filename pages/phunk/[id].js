@@ -10047,51 +10047,49 @@ export default function V3Phunks() {
   }
 
   //get listing info and bid info, if they exist
-    useEffect(() => {
-      connectedWallet();
-      fetchDataWithRetry();
-    }, [id]);
+  useEffect(() => {
+    const fetchDataWithRetry = async () => {
+      const maxRetries = 5;
+      let retries = 0;
+      let success = false;
 
-  // Function to fetch data with retry
-  const fetchDataWithRetry = async () => {
-    const maxRetries = 5;
-    let retries = 0;
-    let success = false;
-
-    while (retries < maxRetries && !success) {
-      try {
+      while (retries < maxRetries && !success) {
         try {
-          const o = await v3.ownerOf(id).then(new Response);
-          setOwner(o);
-        } catch (error) {  }
+          try {
+            const o = await v3.ownerOf(id).then(new Response);
+            setOwner(o);
+          } catch (error) {  }
 
-        try {
-          const listing = await market.phunksOfferedForSale(id);
-          setListed(listing);
-          //console.log('id-listing: ', listing)
-        } catch (error) {  }
+          try {
+            const listing = await market.phunksOfferedForSale(id);
+            setListed(listing);
+            //console.log('id-listing: ', listing)
+          } catch (error) {  }
 
-        try {
-          const bids = await market.phunkBids(id);
-          const topBid = bids.value;
-          if (topBid > 0) {
-            setOffers(topBid);
-            setOfferer(bids.bidder);
-          }
-        } catch (error) {  }
+          try {
+            const bids = await market.phunkBids(id);
+            const topBid = bids.value;
+            if (topBid > 0) {
+              setOffers(topBid);
+              setOfferer(bids.bidder);
+            }
+          } catch (error) {  }
 
-        success = true; // Data fetched successfully
-      } catch (error) {
-        retries++;
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
+          success = true; // Data fetched successfully
+        } catch (error) {
+          retries++;
+          await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
+        }
+      }
+
+      if (!success) {
+        // Handle the case where data couldn't be fetched after maximum retries
+        console.error('Failed to fetch data after maximum retries.');
       }
     }
-
-    if (!success) {
-      // Handle the case where data couldn't be fetched after maximum retries
-      console.error('Failed to fetch data after maximum retries.');
-    }
-  };
+    connectedWallet();
+    fetchDataWithRetry();
+  }, [id]);
 
   //get connected wallet
   const connectedWallet = async () => {
