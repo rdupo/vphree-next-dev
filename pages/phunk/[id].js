@@ -10252,7 +10252,7 @@ export default function V3Phunks() {
     <>
       <Header/>
       <div className="page">
-        <div className="content mx-4">
+        <div className="content px-8">
           <div className="row-wrapper block px-0 my-4">
             <div className="nft-info inline-block pl-0 align-top v3-bg w-full">
               <div id="img-wrapper">

@@ -12,7 +12,7 @@ import { getNFTs } from '../../utils/getNFTs';
 
 export default function V3Phunks() {
   const router = useRouter()
-  const walletAddy = router.query.addy
+  const [walletAddy, setWalletAddy] = useState('')
   const [connectedAddress, setConnectedAddress] = useState('')
   const [nfts, setNFTs] = useState([]);
   const [pendingWithdrawAmt, setPendingWithdrawAmt] = useState('')
@@ -22,6 +22,13 @@ export default function V3Phunks() {
   const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL, 5);
   const [signer, setSigner] = useState([]);
   const contract = new ethers.Contract(marketContract, marketAbi, provider);
+
+  useEffect(() => {
+    if (typeof(router.query.addy) !== 'undefined') {
+      setWalletAddy(router.query.addy)
+      console.log('addy set')
+    }
+  }, [router]);
 
   useEffect(() => {
     async function fetchNFTs() {
@@ -97,7 +104,7 @@ export default function V3Phunks() {
 	      <div className="banner-wrapper mb-6">
 	      	<Image className="col-banner" src={Banner} width="100%" alt="profile banner"/>
 	      </div>
-        <div className="content mx-4">
+        <div className="content px-8">
         	<h1 className="v3-txt mr-auto text-5xl">
             {walletAddy.substr(0,4) + "..." + walletAddy.substr(walletAddy.length - 4, walletAddy.length)}
           </h1>
