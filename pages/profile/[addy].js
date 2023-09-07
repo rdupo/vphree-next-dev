@@ -12,7 +12,7 @@ import { getNFTs } from '../../utils/getNFTs';
 
 export default function V3Phunks() {
   const router = useRouter()
-  const [walletAddy, setWalletAddy] = useState('')
+  const walletAddy = router.query.addy
   const [connectedAddress, setConnectedAddress] = useState('')
   const [nfts, setNFTs] = useState([]);
   const [pendingWithdrawAmt, setPendingWithdrawAmt] = useState('')
@@ -22,13 +22,6 @@ export default function V3Phunks() {
   const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL, 5);
   const [signer, setSigner] = useState([]);
   const contract = new ethers.Contract(marketContract, marketAbi, provider);
-
-  useEffect(() => {
-    if (typeof(router.query.addy) !== 'undefined') {
-      setWalletAddy(router.query.addy)
-      console.log('addy set')
-    }
-  }, [router]);
 
   useEffect(() => {
     async function fetchNFTs() {
