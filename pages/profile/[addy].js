@@ -34,25 +34,30 @@ export default function V3Phunks() {
   }, []);
 
   //get connected wallet
-  (async () => {
-    if (window.ethereum) {
-      if (await window.ethereum.isConnected()) {          
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const mmp = new ethers.providers.Web3Provider(window.ethereum);
-          const signr = mmp.getSigner(accounts[0]);       
-          const address = await signr.getAddress();
-          setConnectedAddress(address);
-          setSigner(signr);
-          const sContract = new ethers.Contract(marketContract, marketAbi, signr);
-          const amt = await sContract.pendingWithdrawals(connectedAddress);
-          setPendingWithdrawAmt(ethers.utils.formatUnits(amt._hex));
-        } catch (error) {
-          console.log('MetaMask not found or error:', error);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (async () => {
+        if (window.ethereum) {
+          if (await window.ethereum.isConnected()) {          
+            try {
+              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+              const mmp = new ethers.providers.Web3Provider(window.ethereum);
+              const signr = mmp.getSigner(accounts[0]);       
+              const address = await signr.getAddress();
+              setConnectedAddress(address);
+              setSigner(signr);
+              const sContract = new ethers.Contract(marketContract, marketAbi, signr);
+              const amt = await sContract.pendingWithdrawals(connectedAddress);
+              setPendingWithdrawAmt(ethers.utils.formatUnits(amt._hex));
+            } catch (error) {
+              console.log('MetaMask not found or error:', error);
+            }
+          }
         }
-      }
+      })();
     }
-  })();
+  }, []);
+      
 
   //connect wallet, if needed
   async function connectWallet() {
