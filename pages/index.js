@@ -19,7 +19,12 @@ export default function Home() {
     }
   }
 
-  connectWallet();
+  //connectWallet();
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      connectWallet();
+    }
+  }, []);
   
   return (
     <>
