@@ -12,7 +12,7 @@ import { getNFTs } from '../../utils/getNFTs';
 
 export default function V3Phunks() {
   const router = useRouter()
-  const walletAddy = router.query.addy
+  const walletAddy = router.query.addy || ''
   const [connectedAddress, setConnectedAddress] = useState('')
   const [nfts, setNFTs] = useState([]);
   const [pendingWithdrawAmt, setPendingWithdrawAmt] = useState('')
