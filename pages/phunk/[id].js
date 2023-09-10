@@ -10301,16 +10301,16 @@ export default function V3Phunks() {
                   :
                   <>
                     <p id="bid" className="">Top Bid:&nbsp;
-                      <span className="collection-desc">{ethers.utils.formatUnits(offers._hex,18) + 'Ξ'}</span>
+                      <span className="collection-desc v3-txt">{ethers.utils.formatUnits(offers._hex,18) + 'Ξ'}</span>
                     </p>
                     <p className="">Bidder:&nbsp; 
-                      <div 
+                      <span 
                         id="top-bidder"
                         className="collection-desc brite v3-txt sans-underline"
                         onClick={() => {Router.push({pathname: `/profile/${offerer}`})}}
                         >
                           {offerer.substr(0,4) + `...` + offerer.substr(offerer.length-4, offerer.length)}
-                      </div>
+                      </span>
                     </p>
                   </>
                 }
