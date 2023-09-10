@@ -10295,7 +10295,7 @@ export default function V3Phunks() {
                     </span>
                   </p>
                 }
-                {offers.length === 0 || typeof(offers[0].currencyValue) === 'undefined' ?
+                {typeof(offers[0].currencyValue) === 'undefined' ?
                   null
                   :
                   <>
