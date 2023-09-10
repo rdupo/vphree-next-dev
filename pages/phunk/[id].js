@@ -10074,6 +10074,7 @@ export default function V3Phunks() {
             if (topBid > 0) {
               setOffers(topBid);
               setOfferer(bids.bidder);
+              //setTopOffer()
             }
           } catch (error) {  }
 
@@ -10295,12 +10296,12 @@ export default function V3Phunks() {
                     </span>
                   </p>
                 }
-                {typeof(offers[0].currencyValue) === 'undefined' ?
+                {offers.length === 0 ?
                   null
                   :
                   <>
                     <p id="bid" className="">Top Bid:&nbsp;
-                      <span className="collection-desc">{offers[0].currencyValue + 'Ξ'}</span>
+                      <span className="collection-desc">{ethers.utils.formatUnits(offers._hex,18) + 'Ξ'}</span>
                     </p>
                     <p className="">Bidder:&nbsp; 
                       <div 
