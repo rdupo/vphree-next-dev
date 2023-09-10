@@ -31,16 +31,16 @@ export default function V3Phunks() {
 
     if (fP.length === 0) {
       const sortedListed = [...listed].sort((a, b) => {
-        const aa = _ethers.utils.formatUnits(a.args.minValue._hex,18);
-        const bb = _ethers.utils.formatUnits(b.args.minValue._hex,18);
+        const aa = ethers.utils.formatUnits(a.args.minValue._hex,18);
+        const bb = ethers.utils.formatUnits(b.args.minValue._hex,18);
         return sortOrder * (aa - bb);
       });
       setListed(sortedListed);
       setDisplayedData(sortedListed); // Update the displayed data as well
     } else {
       const sortedFP = [...fP].sort((a, b) => {
-        const aa = _ethers.utils.formatUnits(a.args.minValue._hex,18);
-        const bb = _ethers.utils.formatUnits(b.args.minValue._hex,18);
+        const aa = ethers.utils.formatUnits(a.args.minValue._hex,18);
+        const bb = ethers.utils.formatUnits(b.args.minValue._hex,18);
         return sortOrder * (aa - bb);
       });
       setFP(sortedFP);
@@ -62,7 +62,7 @@ export default function V3Phunks() {
     const filteredData = listed.filter((item) => {
       for (const [trait, value] of Object.entries(f)) {
         if (trait === 'tokenId') {
-          if (_ethers.utils.formatUnits(item.args.phunkIndex._hex,0).indexOf(value) === -1) {
+          if (ethers.utils.formatUnits(item.args.phunkIndex._hex,0).indexOf(value) === -1) {
             return false;
           }
         } else if  (trait === 'Traits') {
@@ -80,8 +80,8 @@ export default function V3Phunks() {
     });
 
     const sortedFilteredData = filteredData.slice().sort((a, b) => {
-      const aa = _ethers.utils.formatUnits(a.args.minValue._hex,18);
-      const bb = _ethers.utils.formatUnits(b.args.minValue._hex,18);
+      const aa = ethers.utils.formatUnits(a.args.minValue._hex,18);
+      const bb = ethers.utils.formatUnits(b.args.minValue._hex,18);
       return (aa - bb);
     });
     setDisplayedData(sortedFilteredData);
@@ -89,11 +89,11 @@ export default function V3Phunks() {
 
   //events approach
   useEffect(() => {
-    const provider = new _ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL, 5);
+    const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL, 5);
     const contractAddress = '0x101F2256ba4db70F2659DC9989e0eAFb4Fd53829';
     const contractABI = [
       {"inputs":[{"internalType":"address","name":"initialPhunksAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":true,"internalType":"address","name":"fromAddress","type":"address"}],"name":"PhunkBidEntered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":true,"internalType":"address","name":"fromAddress","type":"address"}],"name":"PhunkBidWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":true,"internalType":"address","name":"fromAddress","type":"address"},{"indexed":true,"internalType":"address","name":"toAddress","type":"address"}],"name":"PhunkBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"phunkIndex","type":"uint256"}],"name":"PhunkNoLongerForSale","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"minValue","type":"uint256"},{"indexed":true,"internalType":"address","name":"toAddress","type":"address"}],"name":"PhunkOffered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"internalType":"uint256","name":"minPrice","type":"uint256"}],"name":"acceptBidForPhunk","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"}],"name":"buyPhunk","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"}],"name":"enterBidForPhunk","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"internalType":"uint256","name":"minSalePriceInWei","type":"uint256"}],"name":"offerPhunkForSale","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"internalType":"uint256","name":"minSalePriceInWei","type":"uint256"},{"internalType":"address","name":"toAddress","type":"address"}],"name":"offerPhunkForSaleToAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingWithdrawals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"phunkBids","outputs":[{"internalType":"bool","name":"hasBid","type":"bool"},{"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"internalType":"address","name":"bidder","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"}],"name":"phunkNoLongerForSale","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"phunksAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"phunksOfferedForSale","outputs":[{"internalType":"bool","name":"isForSale","type":"bool"},{"internalType":"uint256","name":"phunkIndex","type":"uint256"},{"internalType":"address","name":"seller","type":"address"},{"internalType":"uint256","name":"minValue","type":"uint256"},{"internalType":"address","name":"onlySellTo","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newPhunksAddress","type":"address"}],"name":"setPhunksContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"phunkIndex","type":"uint256"}],"name":"withdrawBidForPhunk","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-    const contract = new _ethers.Contract(contractAddress, contractABI, provider);
+    const contract = new ethers.Contract(contractAddress, contractABI, provider);
     const initialActiveListings = [];
     const phunkIds = [];
     const currentListings = [];
@@ -136,7 +136,7 @@ export default function V3Phunks() {
 
         const updatedListingsFull = updatedListings.map(itemA => ({
           ...itemA,
-          attributes: attributesMap[_ethers.utils.formatUnits(itemA.args.phunkIndex._hex,0)], 
+          attributes: attributesMap[ethers.utils.formatUnits(itemA.args.phunkIndex._hex,0)], 
         }));
         setListed(updatedListingsFull);
         setDisplayedData(updatedListingsFull);
@@ -642,9 +642,9 @@ export default function V3Phunks() {
               (displayedData.length > 0 ?
                 <Card
                   key={phunk.args.phunkIndex._hex}
-                  price={_ethers.utils.formatUnits(phunk.args.minValue._hex,18) + "Ξ"}
+                  price={ethers.utils.formatUnits(phunk.args.minValue._hex,18) + "Ξ"}
                   atts=""
-                  id={_ethers.utils.formatUnits(phunk.args.phunkIndex._hex,0)}
+                  id={ethers.utils.formatUnits(phunk.args.phunkIndex._hex,0)}
                 />
               : null )  
             ))}
