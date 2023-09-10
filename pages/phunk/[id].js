@@ -10033,11 +10033,6 @@ export default function V3Phunks() {
   const [listPrice, setListPrice] = useState('');
   const [bid, setBid] = useState('');
   const [signer, setSigner] = useState([]);
-  const provider = new ethers.providers.JsonRpcProvider(
-    //process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL,
-    'https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ', 5);
-  const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
-  const market = new ethers.Contract(marketContract, marketAbi, provider);
 
   //toggle class
   const bidToggle = () => {
@@ -10057,6 +10052,11 @@ export default function V3Phunks() {
 
       while (retries < maxRetries && !success) {
         try {
+            const provider = new ethers.providers.JsonRpcProvider(
+              //process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL,
+              'https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ', 5);
+            const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
+            const market = new ethers.Contract(marketContract, marketAbi, provider);
           try {
             const o = await v3.ownerOf(id).then(new Response);
             setOwner(o);
