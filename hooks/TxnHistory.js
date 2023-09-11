@@ -115,8 +115,7 @@ const getTxnHistory = (id) => {
         };
       }
     };
-    
-    const provider = new ethers.providers.AlchemyProvider('goerli', 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
+
     const nftContract = new ethers.Contract('0x169b1CE420F585d8cB02f3b23240a5b90BA54C92', v3Abi, provider);
     const marketplaceContract = new ethers.Contract('0x101F2256ba4db70F2659DC9989e0eAFb4Fd53829', mpAbi, provider);
 
@@ -178,6 +177,7 @@ const getTxnHistory = (id) => {
   };
 
   useEffect(() => {
+    const provider = new ethers.providers.AlchemyProvider('goerli', 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
     fetchTransactionHistory();
   }, [id]);
 
