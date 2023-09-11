@@ -177,7 +177,7 @@ const getTxnHistory = (id) => {
   };
 
   useEffect(() => {
-    const provider = new ethers.providers.AlchemyProvider('goerli', 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
+    const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ',5);
     fetchTransactionHistory();
   }, [id]);
 
