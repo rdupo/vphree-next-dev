@@ -7,7 +7,7 @@ import History from '../../components/History_qBC'
 import getTxnHistory from '../../hooks/TxnHistory_OG'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
-import { ethers } from "ethers"
+import { ethers } from 'ethers'
 
 export default function V3Phunks() {
   //json of phunk atts
