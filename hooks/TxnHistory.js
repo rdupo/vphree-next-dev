@@ -4,7 +4,7 @@ import { Network, Alchemy } from 'alchemy-sdk';
 
 const getTxnHistory = (id) => {
   const settings = {
-    apiKey: process.env.NEXT_PUBLIC_ALCHEMY,
+    apiKey: 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ',
     network: Network.ETH_GOERLI,
   };
   const alchemy = new Alchemy(settings);
