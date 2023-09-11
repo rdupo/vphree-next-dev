@@ -5,7 +5,7 @@ import { Network, Alchemy } from 'alchemy-sdk';
 const getTxnHistory = (id) => {
   const settings = {
     apiKey: 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ',
-    network: Network.ETH_GOERLI,
+    network: 'goerli',
   };
   const alchemy = new Alchemy(settings);
   const [txn, setTxn] = useState([]);
