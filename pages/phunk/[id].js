@@ -10052,9 +10052,6 @@ export default function V3Phunks() {
 
       while (retries < maxRetries && !success) {
         try {
-            //const provider = new ethers.providers.JsonRpcProvider(
-              //process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL,
-              //'https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ', 5);
             const provider = new ethers.providers.AlchemyProvider('goerli', 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
             const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
             const market = new ethers.Contract(marketContract, marketAbi, provider);
