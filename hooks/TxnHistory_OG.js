@@ -81,7 +81,7 @@ const getTxnHistory = (id) => {
     console.log('combined', combinedEvents)
     
     // Sort combinedEvents array by timestamp
-    combinedEvents.sort((a, b) => a.timestamp - b.timestamp);
+    combinedEvents.sort((a, b) => b.timestamp - a.timestamp);
     const filteredEvents = combinedEvents.filter( i => i.tokenId.includes(id) );
     console.log('filtered', filteredEvents)
 
@@ -102,7 +102,7 @@ const getTxnHistory = (id) => {
       } else if (event.eventType === 'PhunkBought') {
         eventType = 'Sold';
       } else if (event.eventType === 'PhunkBidEntered') {
-        eventType = 'Offer'
+        eventType = 'Bid'
       }
 
       return {
