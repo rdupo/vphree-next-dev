@@ -5,6 +5,7 @@ import Header from  '../../components/Header'
 import Card from '../../components/Card'
 import Footer from '../../components/Footer'
 import Banner from '../../assets/profile-banner.png'
+import Profile from '../../assets/profile-icon.png'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
@@ -101,19 +102,27 @@ export default function V3Phunks() {
     <>
       <Header/>
       <div className="page">
-	      <div className="banner-wrapper mb-6">
-	      	<Image className="col-banner" src={Banner} width="100%" alt="profile banner"/>
-	      </div>
         <div className="content px-8">
-        	<h1 className="v3-txt mr-auto text-5xl">
+        	<h1 className="v3-txt mr-auto text-5xl mt-4">
+            <Image
+              height={40}
+              className="inline-flex align-middle my-3 mr-4 h-img" 
+              src={Profile}
+              alt="profile icon"
+            />
             {walletAddy.substr(0,4) + "..." + walletAddy.substr(walletAddy.length - 4, walletAddy.length)}
           </h1>
+          <p className="white-txt text-xl">
+            This wallet owns {nfts.length} V3 Phunks.
+          </p>
           { connectedAddress === walletAddy && pendingWithdrawAmt > 0 ?
-            <div
-              className="my-2"
-              onClick={withdraw}
-            >
-              <button className="cta v3-b black-bg v3-txt">WITHDRAW {Number(pendingWithdrawAmt).toFixed(3)}Ξ</button>
+            <div className="my-2">
+              <button 
+                className="cta v3-b black-bg v3-txt"
+                onClick={withdraw}
+              >
+                WITHDRAW {Number(pendingWithdrawAmt).toFixed(3)}Ξ
+              </button>
             </div>
             :
             null
