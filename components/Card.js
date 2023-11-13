@@ -3,6 +3,20 @@ import Image from 'next/image'
 import Router from 'next/router'
 
 const Card = ({ price, atts, id }) => {
+	let alt_id
+	let s_id = id.toString()
+
+	if (s_id.length === 1) {
+		alt_id = "000"+s_id
+	} else if (s_id.length === 2) {
+		alt_id = "00"+s_id
+	} else if (s_id.length === 3) {
+		alt_id = "0"+s_id
+	} else {
+		alt_id = s_id
+	}
+	
+
 	return 	(
 		<div 
 			key={id}
@@ -14,7 +28,7 @@ const Card = ({ price, atts, id }) => {
 			<div className="img-wrapper v3-bg">
 				<Image 
 					className="w-100" 
-					src={`https://ipfs.io/ipfs/QmaYDjSxjefTzG5BFPF12FM6CK4AjaxBh3WDTnx58CGusE/${id}.png`}
+					src={`/phunks/phunk${alt_id}.svg`}
 					loading="lazy" 
 					alt={`phunk ${id}`}
 					height="100"
