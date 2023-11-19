@@ -32,10 +32,11 @@ const Header = () => {
       if (await window.ethereum.isConnected()) {          
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const mmp = new ethers.providers.Web3Provider(window.ethereum);
-          const signr = mmp.getSigner(accounts[0]); 
-          const address = await signr.getAddress();
-          setConnectedAddress(address); 
+          //console.log("accounts: ", accounts[0])
+          //const mmp = new ethers.providers.Web3Provider(window.ethereum);
+          //const signr = mmp.getSigner(accounts[0]); 
+          //const address = await signr.getAddress();
+          setConnectedAddress(accounts[0]); 
         } catch (error) {
           console.log('MetaMask not found or error:', error);
         }

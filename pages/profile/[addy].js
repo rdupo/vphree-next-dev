@@ -9,7 +9,8 @@ import Profile from '../../assets/profile-icon.png'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from "ethers"
-import { getNFTs } from '../../utils/getNFTs';
+import { getNFTs } from '../../utils/getNFTs'
+import toast, {Toaster} from 'react-hot-toast'
 
 export default function V3Phunks() {
   const router = useRouter()
@@ -97,6 +98,22 @@ export default function V3Phunks() {
       withdrawMyEth()
     }
   };
+
+  const txnToast = (x) => {
+    toast.promise(x, {
+      loading: 'Transaction pending...',
+      success: 'Transaction successful!',
+      error: 'Transaction failed!',
+      position: 'top-center',
+    },
+    {
+      style: {
+        minWidth: '80%',
+        color: '#83dfb2',
+        background: '#000',
+      },
+    })
+  };
   
   return (
     <>
@@ -119,7 +136,7 @@ export default function V3Phunks() {
             <div className="my-2">
               <button 
                 className="cta v3-b black-bg v3-txt"
-                onClick={withdraw}
+                onClick={() => {withdraw; txnToast(withdraw)}}
               >
                 WITHDRAW {Number(pendingWithdrawAmt).toFixed(3)}Ξ
               </button>

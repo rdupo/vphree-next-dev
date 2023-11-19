@@ -8,6 +8,7 @@ import getTxnHistory from '../../hooks/TxnHistory_OG'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from 'ethers'
+import toast, {Toaster} from 'react-hot-toast'
 
 export default function V3Phunks() {
   //json of phunk atts
@@ -10034,6 +10035,19 @@ export default function V3Phunks() {
   const [bid, setBid] = useState('');
   const [signer, setSigner] = useState([]);
 
+  let alt_id
+  let s_id = id.toString()
+
+  if (s_id.length === 1) {
+    alt_id = "000"+s_id
+  } else if (s_id.length === 2) {
+    alt_id = "00"+s_id
+  } else if (s_id.length === 3) {
+    alt_id = "0"+s_id
+  } else {
+    alt_id = s_id
+  }
+
   //toggle class
   const bidToggle = () => {
     setBidState((current) => !current)
@@ -10098,11 +10112,8 @@ export default function V3Phunks() {
       if (await window.ethereum.isConnected()) {          
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const mmp = new ethers.providers.Web3Provider(window.ethereum);
-          const signr = mmp.getSigner(accounts[0]); 
-          const address = await signr.getAddress();
-          setSigner(signr)
-          setConnectedAddress(address); 
+          setConnectedAddress(accounts[0]);
+          console.log("match: ", connectedAddress, ":", owner.toLowerCase())
         } catch (error) {
           console.log('MetaMask not found or error:', error);
         }
@@ -10127,11 +10138,20 @@ export default function V3Phunks() {
   };
 
   //contract interactions
-  //withdraw() function - DELETE 
-  async function withdrawMyEth() {
-    const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
-    const withdrawPromise = cpmp.withdraw();
-    await withdrawPromise;
+  const txnToast = (x) => {
+    toast.promise(x, {
+      loading: 'Transaction pending...',
+      success: 'Transaction successful!',
+      error: 'Transaction failed!',
+      position: 'top-center',
+    },
+    {
+      style: {
+        minWidth: '80%',
+        color: '#83dfb2',
+        background: '#000',
+      },
+    })
   };
 
   async function listPhunk() {
@@ -10258,7 +10278,7 @@ export default function V3Phunks() {
             <div className="nft-info inline-block pl-0 align-top v3-bg w-full">
               <div id="img-wrapper">
                 <Image
-                  src={`https://ipfs.io/ipfs/QmaYDjSxjefTzG5BFPF12FM6CK4AjaxBh3WDTnx58CGusE/${id}.png`}
+                  src={`/phunks/phunk${alt_id}.svg`}
                   alt={`image of phunk ${id}`}
                   width={500}
                   height={500}
@@ -10266,7 +10286,7 @@ export default function V3Phunks() {
               </div>
             </div>
             <h2 id="title" className="v3-txt mb-3">v3phunk #{id}</h2>
-            <div className="metadata inline-block align-top w-3/12">
+            <div className="metadata inline-block align-top w-full md:w-3/12">
               <div className="id-and-owner">
                 <p>Owner</p>
                 <div 
@@ -10277,13 +10297,13 @@ export default function V3Phunks() {
                 </div>
               </div>
             </div>
-            <div className="metadata inline-block align-top w-5/12">
+            <div className="metadata inline-block align-top w-full md:w-5/12">
               <p>Attributes</p>
               <div className="metadata" id="md">
                 <div className="collection-desc v3-txt my-1" dangerouslySetInnerHTML={{ __html: atts}} />
               </div>
             </div>
-            <div className="contract-interactions inline-block pr-0 align-top w-4/12">
+            <div className="contract-interactions inline-block pr-0 align-top w-full md:w-4/12">
               <div className="price-and-bid">
                 {!listed.isForSale ?
                   null
@@ -10321,14 +10341,14 @@ export default function V3Phunks() {
                     Please connect your wallet to interact with this Phunk
                 </div>
               }
-              {connectedAddress !== owner ?
+              {connectedAddress !== owner.toLowerCase() ?
                 <div className="" id="buy-bid-buttons">
                   {!listed.isForSale || connectedAddress.length === 0 ?
                     null
                     :
                     <><button 
                       className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      onClick={buy}
+                      onClick={() => {buy; txnToast(buy)}}
                       id="buy-btn">BUY</button><br/></>
                   }
                   { !connectedAddress ? 
@@ -10354,13 +10374,13 @@ export default function V3Phunks() {
                     <br/>
                     <button 
                       className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                      onClick={bidOn}
+                      onClick={() => {bidOn; txnToast(bidOn)}}
                       id="place-bid-btn">PLACE BID</button>
                   </div>
                   {offers.length === 1 && offerer === connectedAddress ?
                     <button 
                       className="v3-bg black-txt w-full p-1 my-2 brite"
-                      onClick={cancelBid}
+                      onClick={() => {cancelBid; txnToast(cancelBid)}}
                       id="cxl-bid-btn">
                       CANCEL BID
                     </button>
@@ -10390,7 +10410,7 @@ export default function V3Phunks() {
                         <br/>
                         <button 
                           className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                          onClick={list}
+                          onClick={() => {list; txnToast(list)}}
                           >LIST</button>
                       </div>
                     </>
@@ -10398,7 +10418,7 @@ export default function V3Phunks() {
                     <>
                       <button 
                         className="v3-bg black-txt w-full p-1 my-2 brite" 
-                        onClick={delist}
+                        onClick={() => {delist; txnToast(delist)}}
                         id="delist-btn">DELIST</button>
                       <br/>
                     </>
@@ -10408,7 +10428,7 @@ export default function V3Phunks() {
                     :
                     <button 
                       className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      onClick={acceptBid}
+                      onClick={() => {acceptBid; txnToast(acceptBid)}}
                       id="accept-bid-btn">
                       ACCEPT BID
                     </button>

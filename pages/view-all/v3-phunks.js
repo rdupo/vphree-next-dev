@@ -10571,7 +10571,7 @@ export default function V3Phunks() {
                 </div>
             </div>
           </div>
-          <div className="flex flex-wrap justify-left">
+          <div className="flex flex-wrap justify-center">
             {fP.map((phunk) => (
               (typeof(phunk) != 'undefined' ?
                 <Card
