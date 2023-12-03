@@ -16,7 +16,6 @@ export default function V3Phunks() {
   const router = useRouter()
   const id = router.query.id
   const atts = phunks[id]
-  const s_id = id.toString();
   const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
   const marketContract = "0xABa3Cc671eb217A1760464cB07635C9aa7376b40"
   const v3Abi = [
@@ -36,17 +35,22 @@ export default function V3Phunks() {
   const [bid, setBid] = useState('');
   const provider = new ethers.providers.AlchemyProvider('goerli', 'Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ');
   const [signer, setSigner] = useState([]);
-
   let alt_id
 
-  if (s_id.length === 1) {
-    alt_id = "000"+s_id
-  } else if (s_id.length === 2) {
-    alt_id = "00"+s_id
-  } else if (s_id.length === 3) {
-    alt_id = "0"+s_id
+  if(id) {
+    const s_id = id.toString();
+
+    if (s_id.length === 1) {
+      alt_id = "000"+s_id
+    } else if (s_id.length === 2) {
+      alt_id = "00"+s_id
+    } else if (s_id.length === 3) {
+      alt_id = "0"+s_id
+    } else {
+      alt_id = s_id
+    }   
   } else {
-    alt_id = s_id
+    alt_id = "0000"
   }
 
   //toggle class
