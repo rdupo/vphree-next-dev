@@ -6,11 +6,13 @@ import Logo from '../assets/vphree24.png'
 import Wallet from '../assets/wallet.png'
 import Profile from '../assets/profile-icon.png'
 import Discord from '../assets/discord.png'
+import Info from '../assets/info.png'
 import { ethers } from 'ethers'
+import { useWallet } from '../contexts/WalletContext'
 
 const Header = () => {
 	const router = useRouter();
-  const [connectedAddress, setConnectedAddress] = useState('');
+  const { connectedAddress, setConnectedAddress } = useWallet();
 
   async function connectWallet() {
     if (window.ethereum) {
@@ -26,28 +28,6 @@ const Header = () => {
     }
   }
 
-  //get connected wallet
-  const connectedWallet = async () => {
-    if (window.ethereum) {
-      if (await window.ethereum.isConnected()) {          
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          //console.log("accounts: ", accounts[0])
-          //const mmp = new ethers.providers.Web3Provider(window.ethereum);
-          //const signr = mmp.getSigner(accounts[0]); 
-          //const address = await signr.getAddress();
-          setConnectedAddress(accounts[0]); 
-        } catch (error) {
-          console.log('MetaMask not found or error:', error);
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    connectedWallet();
-  }, []);
-
 	return 	(
 		<div className="v3-txt black-bg flex">
 			<div className={"mr-auto brite"}>
@@ -62,6 +42,14 @@ const Header = () => {
 				</Link>
 			</div>
 			<div className="justify-content-end">
+				<Link href="/about" className="sans-underline">
+					<Image 
+						height={30}
+						className="inline-flex align-middle my-3 mr-5 h-img-w brite" 
+						src={Info}
+						alt="site info icon"
+					/>
+				</Link>
 				<a href="https://discord.gg/phunks" target="_blank" className="sans-underline">
 					<Image
 						height={30} 

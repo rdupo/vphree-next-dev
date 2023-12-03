@@ -5,27 +5,7 @@ import Footer from '../components/Footer'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { ethers } from 'ethers'
 
-export default function Home() {
-  async function connectWallet() {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const mmp = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = mmp.getSigner(accounts[0]);       
-        const address = await signer.getAddress();
-      } catch (error) {
-        console.log('MetaMask not found or error:', error);
-      }
-    }
-  }
-
-  //connectWallet();
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      connectWallet();
-    }
-  }, []);
-  
+export default function Home() {  
   return (
     <>
       <Header/>
