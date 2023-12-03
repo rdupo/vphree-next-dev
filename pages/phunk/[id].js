@@ -16,6 +16,7 @@ export default function V3Phunks() {
   const router = useRouter()
   const id = router.query.id
   const atts = phunks[id]
+  const s_id = id.toString();
   const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
   const marketContract = "0xABa3Cc671eb217A1760464cB07635C9aa7376b40"
   const v3Abi = [
@@ -27,7 +28,6 @@ export default function V3Phunks() {
   const [offerer, setOfferer] = useState('');
   const { connectedAddress } = useWallet();
   console.log("connected: ", connectedAddress)
-  //const { signer } = connectedAddress;
   const [owner, setOwner] = useState('');
   const [bidActive, setBidState] = useState(false);
   const [listActive, setListState] = useState(false);
@@ -38,7 +38,6 @@ export default function V3Phunks() {
   const [signer, setSigner] = useState([]);
 
   let alt_id
-  let s_id = id.toString()
 
   if (s_id.length === 1) {
     alt_id = "000"+s_id
