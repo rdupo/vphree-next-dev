@@ -328,7 +328,7 @@ export default function V3Phunks() {
                       onClick={() => {buy()}}
                       id="buy-btn">BUY</button><br/></>
                   }
-                  { connectedAddress === owner ? 
+                  { connectedAddress === owner || connectedAddress.length === 0 ? 
                     null
                     :
                     <button 
