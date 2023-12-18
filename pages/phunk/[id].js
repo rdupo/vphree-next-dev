@@ -130,7 +130,7 @@ export default function V3Phunks() {
   };
 
   async function listPhunk() {
-    const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const cc = new ethers.Contract(collectionContract, v3Abi, signer);
@@ -147,20 +147,20 @@ export default function V3Phunks() {
       const listPromise = cpmp.offerPhunkForSale(id, lPrice);
       txnToast(listPromise);
       await listPromise;
-    };
+    };*/
   }
 
   async function delistPhunk() {
-    const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const delistPromise = cpmp.phunkNoLongerForSale(id);
     txnToast(delistPromise); 
-    await delistPromise;
+    await delistPromise;*/
   }
 
   async function acceptPhunkBid() {
-    const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const cc = new ethers.Contract(collectionContract, v3Abi, signer);
@@ -170,79 +170,79 @@ export default function V3Phunks() {
     const bidPrice = c.value._hex;
     const acceptBidPromise = cpmp.acceptBidForPhunk(id, bidPrice);
     txnToast(acceptBidPromise);
-    await acceptBidPromise;
+    await acceptBidPromise;*/
   }
 
   async function buyPhunk() {
-    const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const buyPhunkPromise = await cpmp.connect(signer).buyPhunk(id, {value: listed.minValue._hex});
     txnToast(buyPhunkPromise);
-    await buyPhunkPromise.wait();
+    await buyPhunkPromise.wait();*/
   }
 
   async function bidOnPhunk() {
-    const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const ethBid = ethers.utils.parseUnits(bid, 'ether');
     const enterBidPromise = cpmp.enterBidForPhunk(id, {value: ethBid});
     txnToast(enterBidPromise);
-    await enterBidPromise;
+    await enterBidPromise;*/
   }
 
   async function cancelPhunkBid() {
-    const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const withdrawBidPromise = cpmp.withdrawBidForPhunk(id);
     txnToast(withdrawBidPromise);  
-    await withdrawBidPromise;
+    await withdrawBidPromise;*/
   }
 
   // onClick functions
   // list
   async function list() {
-    if(signer) {
+    /*if(signer) {
       listPhunk()
-    }
+    }*/
   }
 
   // delist
   async function delist() {
-    if(signer) {
+    /*if(signer) {
       delistPhunk()
-    }
+    }*/
   }
 
   // accept bid
   async function acceptBid() {
-    if(signer) {
+    /*if(signer) {
       acceptPhunkBid()
-    }
+    }*/
   }
 
   // buy
   async function buy() {
-    console.log('signer: ', signer)
+    /*console.log('signer: ', signer)
     if(signer){
       buyPhunk()
-    }
+    }*/
   }
 
   // place bid
   async function bidOn() {
-    if(signer) {
+    /*if(signer) {
       bidOnPhunk()
-    }
+    }*/
   }
 
   // cancel bid
   async function cancelBid() {
-    if(signer) {
+    /*if(signer) {
       cancelPhunkBid()
-    }
+    }*/
   }
   
   return (
@@ -354,7 +354,7 @@ export default function V3Phunks() {
                       onClick={() => {bidOn()}}
                       id="place-bid-btn">PLACE BID</button>
                   </div>
-                  {offers.length === 1 && offerer === connectedAddress ?
+                  {offerer === connectedAddress ?
                     <button 
                       className="v3-bg black-txt w-full p-1 my-2 brite"
                       onClick={() => {cancelBid()}}

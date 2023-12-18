@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react'
+ import { React, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Header from  '../../components/Header'
 import CollectionInfo from '../../components/CollectionInfo'
