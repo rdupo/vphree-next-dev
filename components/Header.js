@@ -15,7 +15,7 @@ const Header = () => {
   const { connectedAddress, setConnectedAddress } = useWallet();
 
   async function connectWallet() {
-    if (window.ethereum) {
+    /*if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const mmp = new ethers.providers.Web3Provider(window.ethereum);
@@ -25,7 +25,7 @@ const Header = () => {
       } catch (error) {
         console.log('MetaMask not found or error:', error);
       }
-    }
+    }*/
   }
 
 	return 	(
