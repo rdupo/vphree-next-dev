@@ -10,6 +10,7 @@ import Etherscan from '../../assets/etherscan.png'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { ethers } from 'ethers'
+import { useWallet } from '../../contexts/WalletContext'
 
 export default function V3Phunks() {
   const collectionContract = "0x169b1CE420F585d8cB02f3b23240a5b90BA54C92"
