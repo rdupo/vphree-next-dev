@@ -63,47 +63,48 @@ export default function V3Phunks() {
   }
 
   //get listing info and bid info, if they exist
-  useEffect(() => {
-    const fetchDataWithRetry = async () => {
-      const maxRetries = 5;
-      let retries = 0;
-      let success = false;
+  const fetchDataWithRetry = async () => {
+    const maxRetries = 5;
+    let retries = 0;
+    let success = false;
 
-      while (retries < maxRetries && !success) {
+    while (retries < maxRetries && !success) {
+      try {
+          const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
+          const market = new ethers.Contract(marketContract, marketAbi, provider);
         try {
-            const v3 = new ethers.Contract(collectionContract, v3Abi, provider);
-            const market = new ethers.Contract(marketContract, marketAbi, provider);
-          try {
-            const o = await v3.ownerOf(id).then(new Response);
-            setOwner(o);
-          } catch (error) {  }
+          const o = await v3.ownerOf(id).then(new Response);
+          setOwner(o);
+        } catch (error) {  }
 
-          try {
-            const listing = await market.phunksOfferedForSale(id);
-            setListed(listing);
-          } catch (error) {  }
+        try {
+          const listing = await market.phunksOfferedForSale(id);
+          setListed(listing);
+        } catch (error) {  }
 
-          try {
-            const bids = await market.phunkBids(id);
-            const topBid = bids.value;
-            if (topBid > 0) {
-              setOffers(topBid);
-              setOfferer(bids.bidder);
-            }
-          } catch (error) {  }
+        try {
+          const bids = await market.phunkBids(id);
+          const topBid = bids.value;
+          if (topBid > 0) {
+            setOffers(topBid);
+            setOfferer(bids.bidder);
+          }
+        } catch (error) {  }
 
-          success = true; // Data fetched successfully
-        } catch (error) {
-          retries++;
-          await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
-        }
-      }
-
-      if (!success) {
-        // Handle the case where data couldn't be fetched after maximum retries
-        console.error('Failed to fetch data after maximum retries.');
+        success = true; // Data fetched successfully
+      } catch (error) {
+        retries++;
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
       }
     }
+
+    if (!success) {
+      // Handle the case where data couldn't be fetched after maximum retries
+      console.error('Failed to fetch data after maximum retries.');
+    }
+  }
+
+  useEffect(() => {
     fetchDataWithRetry();
   }, [id]);
 
@@ -130,119 +131,177 @@ export default function V3Phunks() {
   };
 
   async function listPhunk() {
-    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const cc = new ethers.Contract(collectionContract, v3Abi, signer);
-    const ap = await cc.isApprovedForAll(connectedAddress, collectionContract);
+    const ap = await cc.isApprovedForAll(connectedAddress, marketContract);
     if (ap) {
       const lPrice = ethers.utils.parseUnits(listPrice, 'ether');
       const listPromise = cpmp.offerPhunkForSale(id, lPrice);
       txnToast(listPromise);
-      await listPromise;
+      await listPromise
+        .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });
     } else {
-      const setApproval = await cc.setApprovalForAll(collectionContract, true);
+      const setApproval = cc.setApprovalForAll(marketContract, true);
+      txnToast(setApproval);
       await setApproval.wait();
       const lPrice = ethers.utils.parseUnits(listPrice, 'ether');
       const listPromise = cpmp.offerPhunkForSale(id, lPrice);
       txnToast(listPromise);
-      await listPromise;
-    };*/
+      await listPromise
+        .then(result => {
+          const rh = result.hash
+          mmp.waitForTransaction(rh).then(() => {
+            fetchDataWithRetry()
+          })
+        });
+    };
   }
 
   async function delistPhunk() {
-    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const delistPromise = cpmp.phunkNoLongerForSale(id);
     txnToast(delistPromise); 
-    await delistPromise;*/
+    await delistPromise
+      .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });
   }
 
   async function acceptPhunkBid() {
-    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const cc = new ethers.Contract(collectionContract, v3Abi, signer);
-    const setApproval = await cc.setApprovalForAll('', true);
-    await setApproval.wait();
+    const ap = await cc.isApprovedForAll(connectedAddress, marketContract);
     const c = await cpmp.phunkBids(id).then(new Response);
     const bidPrice = c.value._hex;
-    const acceptBidPromise = cpmp.acceptBidForPhunk(id, bidPrice);
-    txnToast(acceptBidPromise);
-    await acceptBidPromise;*/
+    if(ap) {
+      const acceptBidPromise = cpmp.acceptBidForPhunk(id, bidPrice);
+      txnToast(acceptBidPromise);
+      await acceptBidPromise
+        .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });
+    } else {
+      const setApproval = cc.setApprovalForAll(marketContract, true);
+      txnToast(setApproval);
+      await setApproval.wait();
+      const acceptBidPromise = cpmp.acceptBidForPhunk(id, bidPrice);
+      txnToast(acceptBidPromise);
+      await acceptBidPromise
+        .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });      
+    }
   }
 
   async function buyPhunk() {
-    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
+    console.log("buy signer: ", signer)
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
-    const buyPhunkPromise = await cpmp.connect(signer).buyPhunk(id, {value: listed.minValue._hex});
+    const buyPhunkPromise = cpmp.connect(signer).buyPhunk(id, {value: listed.minValue._hex});
     txnToast(buyPhunkPromise);
-    await buyPhunkPromise.wait();*/
+    await buyPhunkPromise
+      .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });
   }
 
   async function bidOnPhunk() {
-    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const ethBid = ethers.utils.parseUnits(bid, 'ether');
     const enterBidPromise = cpmp.enterBidForPhunk(id, {value: ethBid});
     txnToast(enterBidPromise);
-    await enterBidPromise;*/
+    await enterBidPromise
+      .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });
   }
 
   async function cancelPhunkBid() {
-    /*const mmp = new ethers.providers.Web3Provider(window.ethereum);
+    const mmp = new ethers.providers.Web3Provider(window.ethereum);
     const signer = mmp.getSigner(connectedAddress);
     const cpmp = new ethers.Contract(marketContract, marketAbi, signer);
     const withdrawBidPromise = cpmp.withdrawBidForPhunk(id);
     txnToast(withdrawBidPromise);  
-    await withdrawBidPromise;*/
+    await withdrawBidPromise
+      .then(result => {
+        const rh = result.hash
+        mmp.waitForTransaction(rh).then(() => {
+          fetchDataWithRetry()
+        })
+      });
   }
 
   // onClick functions
   // list
   async function list() {
-    /*if(signer) {
+    if(signer) {
       listPhunk()
-    }*/
+    }
   }
 
   // delist
   async function delist() {
-    /*if(signer) {
+    if(signer) {
       delistPhunk()
-    }*/
+    }
   }
 
   // accept bid
   async function acceptBid() {
-    /*if(signer) {
+    if(signer) {
       acceptPhunkBid()
-    }*/
+    }
   }
 
   // buy
   async function buy() {
-    /*console.log('signer: ', signer)
+    console.log('signer: ', signer)
     if(signer){
       buyPhunk()
-    }*/
+    }
   }
 
   // place bid
   async function bidOn() {
-    /*if(signer) {
+    if(signer) {
       bidOnPhunk()
-    }*/
+    }
   }
 
   // cancel bid
   async function cancelBid() {
-    /*if(signer) {
+    if(signer) {
       cancelPhunkBid()
-    }*/
+    }
   }
   
   return (
@@ -269,7 +328,9 @@ export default function V3Phunks() {
                 <div 
                   id="owner" 
                   className="collection-desc brite v3-txt sans-underline"
-                  onClick={() => {Router.push({pathname: `/profile/${owner}`})}}>
+                  onClick={() => {connectedAddress === owner ?
+                                  Router.push({pathname: `/account/${owner}`}) :
+                                  Router.push({pathname: `/profile/${owner}`})}}>
                   {owner.substr(0,4) + `...` + owner.substr(owner.length-4, owner.length)}
                 </div>
               </div>
@@ -302,8 +363,10 @@ export default function V3Phunks() {
                       <span 
                         id="top-bidder"
                         className="collection-desc brite v3-txt sans-underline"
-                        onClick={() => {Router.push({pathname: `/profile/${offerer}`})}}
-                        >
+                        onClick={() => {connectedAddress === offerer ?
+                                        Router.push({pathname: `/account/${offerer}`}) :
+                                        Router.push({pathname: `/profile/${offerer}`})}}
+                      >
                           {offerer.substr(0,4) + `...` + offerer.substr(offerer.length-4, offerer.length)}
                       </span>
                     </p>

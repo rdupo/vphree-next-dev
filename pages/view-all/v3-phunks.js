@@ -26,7 +26,7 @@ export default function V3Phunks() {
   const [nose, setNose] = useState("")                
   const [sex, setSex] = useState("")  
   const [teeth, setTeeth] = useState("")             
-  const [traits, setTraits] = useState("")
+  const [atts, setAtts] = useState("")
   const [filtersActive, setFilterState] = useState(false)
   const [appliedFilters, setAppliedFilters] = useState({})
   const [fP, setFP] = useState(phunks)
@@ -538,10 +538,10 @@ export default function V3Phunks() {
                   <select 
                     className="select lite-v3-bg" 
                     type="text" 
-                    value={traits}
+                    value={atts}
                     onChange={(e) => {
-                      setF((prevState) => ({ ...prevState, traits: e.target.value }));
-                      setTraits(e.target.value)
+                      setF((prevState) => ({ ...prevState, atts: e.target.value }));
+                      setAtts(e.target.value)
                     }}
                   >
                     <option value="" disabled hidden>Trait Count</option>
@@ -560,10 +560,10 @@ export default function V3Phunks() {
                       onClick={() => {
                         setF((prevState) => {
                           const updatedState = { ...prevState };
-                          delete updatedState.traits;
+                          delete updatedState.atts;
                           return updatedState;
                         });
-                        setTraits("");
+                        setAtts("");
                       }} 
                       type="button">x</button>
                   </div>

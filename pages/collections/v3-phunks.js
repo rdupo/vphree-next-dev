@@ -22,8 +22,9 @@ export default function V3Phunks() {
   const [sortActive, setSortState] = useState(false)
   const [fP, setFP] = useState([])
   const [displayedData, setDisplayedData] = useState([]);
+  const { connectedAddress } = useWallet();
   const [mostRecentPhunkOfferedEvent, setMostRecentPhunkOfferedEvent] = useState({ blockNumber: 8616071 });
-  
+
   // trait and id filtering
   //sort listings
   const sortData = (order) => {

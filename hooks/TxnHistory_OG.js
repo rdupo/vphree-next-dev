@@ -59,7 +59,7 @@ const getTxnHistory = (id) => {
     };
 
     const nftContract = new ethers.Contract('0x169b1CE420F585d8cB02f3b23240a5b90BA54C92', v3Abi, provider);
-    const marketplaceContract = new ethers.Contract('0x101F2256ba4db70F2659DC9989e0eAFb4Fd53829', mpAbi, provider);
+    const marketplaceContract = new ethers.Contract('0xABa3Cc671eb217A1760464cB07635C9aa7376b40', mpAbi, provider);
 
     const filterList = marketplaceContract.filters.PhunkOffered(id, null, null);
     const filterOffer = marketplaceContract.filters.PhunkBidEntered(id, null, null);

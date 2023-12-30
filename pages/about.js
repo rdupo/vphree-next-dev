@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { ethers } from 'ethers'
 
-export default function Home() {  
+export default function Home() {
   return (
     <>
       <Header/>

@@ -12,10 +12,21 @@ import { useWallet } from '../contexts/WalletContext'
 
 const Header = () => {
 	const router = useRouter();
-  const { connectedAddress, setConnectedAddress } = useWallet();
+  const { connectedAddress, setConnectedAddress, walletChanged, setWalletChanged } = useWallet();
+
+  useEffect(() => {
+	  console.log('connectedAddress:', connectedAddress);
+	  console.log('walletChanged:', walletChanged);
+
+	  // Update connectedWallet in the page whenever it changes
+	  if (walletChanged) {
+	    console.log('Re-rendering page...');
+	    setWalletChanged(false); // Reset walletChanged to false
+	  }
+	}, [connectedAddress, walletChanged, setWalletChanged]);
 
   async function connectWallet() {
-    /*if (window.ethereum) {
+    if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const mmp = new ethers.providers.Web3Provider(window.ethereum);
@@ -25,7 +36,7 @@ const Header = () => {
       } catch (error) {
         console.log('MetaMask not found or error:', error);
       }
-    }*/
+    }
   }
 
 	return 	(
@@ -72,7 +83,7 @@ const Header = () => {
 						className="inline-flex align-middle my-3 mr-8 h-img brite" 
 						src={Profile}
 						alt="profile icon"
-						onClick={() => {Router.push({pathname: `/profile/${connectedAddress}`})}}
+						onClick={() => {Router.push({pathname: `/account/${connectedAddress}`})}}
 					/>
 				}
 			</div>

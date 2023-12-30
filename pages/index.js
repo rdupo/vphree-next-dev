@@ -1,14 +1,22 @@
-import { React, useEffect } from 'react'
+import { React, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Header from  '../components/Header'
 import Footer from '../components/Footer'
 import { Silkscreen, Montserrat } from 'next/font/google'
 import { ethers } from 'ethers'
+import { useWallet } from '../contexts/WalletContext'
 
 export default function Home() {  
+  const [connectedAddress, setConnectedAddress] = useState(null);
+
+  // Callback function to update connectedWallet in the page
+  const updateConnectedWallet = (newWallet) => {
+    setConnectedAddress(newWallet);
+  };
+
   return (
     <>
-      <Header/>
+      <Header onUpdateConnectedWallet={updateConnectedWallet}/>
       <div className="content home-bg">
         <div className="home-wrapper">
           <h2 className="home-title v3-txt">Welcome to vPhree</h2>
