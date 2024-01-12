@@ -5,14 +5,16 @@ const WalletContext = createContext();
 
 export function WalletProvider({ children }) {
   const [connectedAddress, setConnectedAddress] = useState('');
-  const [walletChanged, setWalletChanged] = useState(false);
 
   useEffect(() => {
-    // Use the Ethereum provider to listen for wallet changes
+    const storedAddress = localStorage.getItem('connectedAddress');
+    if (storedAddress) {
+      setConnectedAddress(storedAddress);
+    }
+
     const handleAccountsChanged = (accounts) => {
-      // Update the connected wallet when the active account changes
       setConnectedAddress(accounts[0] || '');
-      setWalletChanged(true); // Set walletChanged to true on account change
+      localStorage.setItem('connectedAddress', accounts[0] || '');
     };
 
     if (window.ethereum) {
@@ -20,7 +22,6 @@ export function WalletProvider({ children }) {
     }
 
     return () => {
-      // Cleanup event listener when component unmounts
       if (window.ethereum) {
         window.ethereum.off('accountsChanged', handleAccountsChanged);
       }
@@ -30,8 +31,6 @@ export function WalletProvider({ children }) {
   const value = {
     connectedAddress,
     setConnectedAddress,
-    walletChanged,
-    setWalletChanged,
   };
 
   return (

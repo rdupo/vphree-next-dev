@@ -26,7 +26,6 @@ export default function V3Phunks() {
     'https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ', 5);
   const [signer, setSigner] = useState([]);
   const contract = new ethers.Contract(marketContract, marketAbi, provider);
-  //const { connectedAddress } = useWallet();
   const { connectedAddress, walletChanged } = useWallet();
 
   const txnToast = (x) => {
@@ -60,9 +59,9 @@ export default function V3Phunks() {
     setNFTs(nftIds);
   }
 
-  useEffect(() => {
+ //useEffect(() => {
     fetchNFTs(router.query.addy);
-  },[]);
+  //},[]);
 
   // Fetch NFTs whenever the wallet changes
   useEffect(() => {
@@ -70,7 +69,8 @@ export default function V3Phunks() {
     console.log('Page walletChanged:', walletChanged);
 
     if (walletChanged) {
-      fetchNFTs(connectedAddress);
+      //fetchNFTs(connectedAddress);
+      Router.push({pathname: `/account/${connectedAddress}`})
     }
   }, [connectedAddress, walletChanged]);
 
@@ -85,7 +85,7 @@ export default function V3Phunks() {
     .then(result => {
           const rh = result.hash
           mmp.waitForTransaction(rh).then(() => {
-            fetchDataWithRetry()
+            fetchNFTs()
           })
         });
   }

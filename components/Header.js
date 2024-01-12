@@ -61,7 +61,7 @@ const Header = () => {
 						alt="site info icon"
 					/>
 				</Link>
-				<a href="https://discord.gg/phunks" target="_blank" className="sans-underline">
+				<a href="https://discord.gg/hMC6cxBg3u" target="_blank" className="sans-underline">
 					<Image
 						height={30} 
 						className="inline-flex align-middle my-3 mr-5 h-img-w brite" 

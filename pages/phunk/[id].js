@@ -25,7 +25,7 @@ export default function V3Phunks() {
   const [listed, setListed] = useState([]);
   const [offers, setOffers] = useState('');
   const [offerer, setOfferer] = useState('');
-  const { connectedAddress } = useWallet();
+  const { connectedAddress, setConnectedAddress } = useWallet();
   console.log("connected: ", connectedAddress)
   const [owner, setOwner] = useState('');
   const [bidActive, setBidState] = useState(false);
@@ -62,6 +62,10 @@ export default function V3Phunks() {
     setListState((current) => !current)
   }
 
+  /*set toggle classes to false on re-render
+  setBidState(false)
+  setListState(false)*/
+
   //get listing info and bid info, if they exist
   const fetchDataWithRetry = async () => {
     const maxRetries = 5;
@@ -75,6 +79,7 @@ export default function V3Phunks() {
         try {
           const o = await v3.ownerOf(id).then(new Response);
           setOwner(o);
+          console.log("owner: ", owner)
         } catch (error) {  }
 
         try {
@@ -88,6 +93,7 @@ export default function V3Phunks() {
           if (topBid > 0) {
             setOffers(topBid);
             setOfferer(bids.bidder);
+            console.log("bid from: ", offerer, "; connected: ", connectedAddress);
           }
         } catch (error) {  }
 
@@ -106,7 +112,11 @@ export default function V3Phunks() {
 
   useEffect(() => {
     fetchDataWithRetry();
-  }, [id]);
+    const storedAddress = localStorage.getItem('connectedAddress');
+    if (storedAddress && connectedAddress !== storedAddress) {
+      setConnectedAddress(storedAddress);
+    }
+  }, [id,connectedAddress, setConnectedAddress]);
 
   const txnToast = (x) => {
     if (!(x instanceof Promise)) {
@@ -140,6 +150,7 @@ export default function V3Phunks() {
       const lPrice = ethers.utils.parseUnits(listPrice, 'ether');
       const listPromise = cpmp.offerPhunkForSale(id, lPrice);
       txnToast(listPromise);
+      setListState(false);
       await listPromise
         .then(result => {
         const rh = result.hash
@@ -154,6 +165,7 @@ export default function V3Phunks() {
       const lPrice = ethers.utils.parseUnits(listPrice, 'ether');
       const listPromise = cpmp.offerPhunkForSale(id, lPrice);
       txnToast(listPromise);
+      setListState(false);
       await listPromise
         .then(result => {
           const rh = result.hash
@@ -199,7 +211,7 @@ export default function V3Phunks() {
       });
     } else {
       const setApproval = cc.setApprovalForAll(marketContract, true);
-      txnToast(setApproval);
+      txnToast(setApproval); 
       await setApproval.wait();
       const acceptBidPromise = cpmp.acceptBidForPhunk(id, bidPrice);
       txnToast(acceptBidPromise);
@@ -236,11 +248,12 @@ export default function V3Phunks() {
     const ethBid = ethers.utils.parseUnits(bid, 'ether');
     const enterBidPromise = cpmp.enterBidForPhunk(id, {value: ethBid});
     txnToast(enterBidPromise);
+    setBidState(false);
     await enterBidPromise
       .then(result => {
         const rh = result.hash
         mmp.waitForTransaction(rh).then(() => {
-          fetchDataWithRetry()
+          fetchDataWithRetry()          
         })
       });
   }
@@ -255,7 +268,8 @@ export default function V3Phunks() {
       .then(result => {
         const rh = result.hash
         mmp.waitForTransaction(rh).then(() => {
-          fetchDataWithRetry()
+          //fetchDataWithRetry()
+          Router.reload()
         })
       });
   }
@@ -328,7 +342,7 @@ export default function V3Phunks() {
                 <div 
                   id="owner" 
                   className="collection-desc brite v3-txt sans-underline"
-                  onClick={() => {connectedAddress === owner ?
+                  onClick={() => {connectedAddress.toLowerCase() === owner.toLowerCase() ?
                                   Router.push({pathname: `/account/${owner}`}) :
                                   Router.push({pathname: `/profile/${owner}`})}}>
                   {owner.substr(0,4) + `...` + owner.substr(owner.length-4, owner.length)}
@@ -373,106 +387,104 @@ export default function V3Phunks() {
                   </>
                 }
               </div>
-              {connectedAddress.length > 0 ? 
-                null :
-                <div 
-                  className="p-3 black-bg v3-txt v3-b w-full"  
-                  id="not-connected">
-                    Please connect your wallet to interact with this Phunk
-                </div>
-              }
-              {connectedAddress !== owner ?
-                <div className="" id="buy-bid-buttons">
-                  {!listed.isForSale || connectedAddress.length === 0 ?
-                    null
-                    :
-                    <><button 
-                      className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      onClick={() => {buy()}}
-                      id="buy-btn">BUY</button><br/></>
-                  }
-                  { connectedAddress === owner || connectedAddress.length === 0 ? 
-                    null
-                    :
-                    <button 
-                      className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      onClick={bidToggle}
-                      id="bid-btn-togl">BID
-                    </button>
-                  }
-                  <br/>
-                  <div className={bidActive ? '' : 'hidden'} id="enter-bid-amount">
-                    <input
-                      className="lite-v3-bg w-full p-1 my-2 black-txt" 
-                      type="number" 
-                      name="bid-amt" 
-                      placeholder="bid amount"
-                      min="0"
-                      id="bid-amt"
-                      onChange={(e) => setBid(e.target.value )}
-                    />
-                    <br/>
-                    <button 
-                      className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                      onClick={() => {bidOn()}}
-                      id="place-bid-btn">PLACE BID</button>
-                  </div>
-                  {offerer === connectedAddress ?
-                    <button 
-                      className="v3-bg black-txt w-full p-1 my-2 brite"
-                      onClick={() => {cancelBid()}}
-                      id="cxl-bid-btn">
-                      CANCEL BID
-                    </button>
-                    :
-                    null
-                  }
-                </div>
-                :
-                <div className="seller-buttons">
-                  {!listed.isForSale ?
-                    <>
+              {connectedAddress.length > 0 ?
+                <div> 
+                  {connectedAddress.toLowerCase() !== owner.toLowerCase() ?
+                    <div className="" id="buy-bid-buttons">
+                      {!listed.isForSale ?
+                        null
+                        :
+                        <><button 
+                          className="v3-bg black-txt w-full p-1 my-2 brite" 
+                          onClick={() => {buy()}}
+                          id="buy-btn">BUY</button><br/></>
+                      }
                       <button 
                         className="v3-bg black-txt w-full p-1 my-2 brite" 
-                        onClick={listToggle}
-                        id="list-btn-togl">LIST</button>
-                      <br id="delist-br"/>
-                      <div id="enter-list-amount" className={listActive ? '' : 'hidden'}>
-                        <input 
+                        onClick={bidToggle}
+                        id="bid-btn-togl">BID
+                      </button>
+                      <br/>
+                      <div className={bidActive ? '' : 'hidden'} id="enter-bid-amount">
+                        <input
                           className="lite-v3-bg w-full p-1 my-2 black-txt" 
                           type="number" 
-                          name="sell-amt" 
-                          placeholder="list price"
+                          name="bid-amt" 
+                          placeholder="bid amount"
                           min="0"
-                          id="sell-amt"
-                          onChange={(e) => setListPrice(e.target.value)}
+                          id="bid-amt"
+                          onChange={(e) => setBid(e.target.value )}
                         />
                         <br/>
                         <button 
                           className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
-                          onClick={() => {list()}}
-                          >LIST</button>
+                          onClick={() => {bidOn()}}
+                          id="place-bid-btn">PLACE BID</button>
                       </div>
-                    </>
+                      {offerer.toLowerCase() === connectedAddress.toLowerCase() ?
+                        <button 
+                          className="v3-bg black-txt w-full p-1 my-2 brite"
+                          onClick={() => {cancelBid()}}
+                          id="cxl-bid-btn">
+                          CANCEL BID
+                        </button>
+                        :
+                        null
+                      }
+                    </div>
                     :
-                    <>
-                      <button 
-                        className="v3-bg black-txt w-full p-1 my-2 brite" 
-                        onClick={() => {delist()}}
-                        id="delist-btn">DELIST</button>
-                      <br/>
-                    </>
+                    <div className="seller-buttons">
+                      {!listed.isForSale ?
+                        <>
+                          <button 
+                            className="v3-bg black-txt w-full p-1 my-2 brite" 
+                            onClick={listToggle}
+                            id="list-btn-togl">LIST</button>
+                          <br id="delist-br"/>
+                          <div id="enter-list-amount" className={listActive ? '' : 'hidden'}>
+                            <input 
+                              className="lite-v3-bg w-full p-1 my-2 black-txt" 
+                              type="number" 
+                              name="sell-amt" 
+                              placeholder="list price"
+                              min="0"
+                              id="sell-amt"
+                              onChange={(e) => setListPrice(e.target.value)}
+                            />
+                            <br/>
+                            <button 
+                              className="black-bg v3-txt v3-b w-full p-1 my-2 brite" 
+                              onClick={() => {list()}}
+                              >LIST</button>
+                          </div>
+                        </>
+                        :
+                        <>
+                          <button 
+                            className="v3-bg black-txt w-full p-1 my-2 brite" 
+                            onClick={() => {delist()}}
+                            id="delist-btn">DELIST</button>
+                          <br/>
+                        </>
+                      }
+                      {offers.length === 0 ?
+                        null
+                        :
+                        <button 
+                          className="v3-bg black-txt w-full p-1 my-2 brite" 
+                          onClick={() => {acceptBid()}}
+                          id="accept-bid-btn">
+                          ACCEPT BID
+                        </button>
+                      }
+                    </div>
                   }
-                  {offers.length === 0 ?
-                    null
-                    :
-                    <button 
-                      className="v3-bg black-txt w-full p-1 my-2 brite" 
-                      onClick={() => {acceptBid()}}
-                      id="accept-bid-btn">
-                      ACCEPT BID
-                    </button>
-                  }
+                </div>
+                :
+                <div 
+                  className="p-3 black-bg v3-txt v3-b w-full"  
+                  id="not-connected">
+                    Please connect your wallet to interact with this Phunk
                 </div>
               }
             </div>
