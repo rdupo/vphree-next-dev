@@ -77,6 +77,14 @@ select, option, .black-txt {
   color: #fff;
 }
 
+.philip-txt {
+  color: #648596;
+}
+
+.v1-txt {
+  color: #a79aff;
+}
+
 /*border*/
 .v3-b {
   border: 3px solid #83dfb2;

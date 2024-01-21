@@ -4,15 +4,14 @@ import Header from  '../../components/Header'
 import CollectionInfo from '../../components/CollectionInfo'
 import Card from '../../components/Card'
 import Footer from '../../components/Footer'
-import Banner from '../../assets/v3banner.png'
+import Banner from '../../assets/philip-banner.png'
 import Twitter from '../../assets/twitter.png'
 import Etherscan from '../../assets/etherscan.png'
 import { Silkscreen, Montserrat } from 'next/font/google'
-import phunks from '../../utils/phunkData'
-import v3PhunkAddy from '../../utils/v3PhunkAddy'
+import philips from '../../utils/philips'
 
 export default function V3Phunks() {
-  const collectionContract = v3PhunkAddy
+  const collectionContract = "0x28bE0037712B218D16859AC19C3FA50528244FFC"
   const [f, setF] = useState({})
   const [beard, setBeard] = useState("")
   const [cheeks, setCheeks] = useState("")
@@ -30,7 +29,9 @@ export default function V3Phunks() {
   const [atts, setAtts] = useState("")
   const [filtersActive, setFilterState] = useState(false)
   const [appliedFilters, setAppliedFilters] = useState({})
-  const [fP, setFP] = useState(phunks)
+  const [fP, setFP] = useState(philips)
+  const phunks = philips
+  const philDesc = ["View all 1,004 Philips. Click on a Philip to view it's attribute(s) or bid on/buy it. A preview of the wrapped Philip is displayed on hover. You can wrap your Philip at ", <a href="https://www.v1phunks.io/" target="_blank">v1phunks.io</a>]
 
   // Use the useEffect hook to monitor changes to the 'f' state
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function V3Phunks() {
     }
     const filteredPhunks = filterPhunks();
     setFP(filteredPhunks);
-    //console.log(filteredPhunks);
+    console.log(filteredPhunks);
   }, [f]); // The useEffect hook will run whenever 'f' changes
 
   //toggle class
@@ -59,9 +60,9 @@ export default function V3Phunks() {
         </div>
         <div className="content px-8">
           <CollectionInfo
-            title="All V3 Phunks"
-            desc="View all 10,000 v3Phunks. Click on a Phunk to view it&#39;s attribute(s) or bid on/buy it."
-            twitter="https://twitter.com/v3phunks"
+            title="All Philips"
+            desc={philDesc}
+            twitter="https://twitter.com/CryptoPhunksV1"
             contract={collectionContract}
           />
           <div className="filter-sort-wrapper mb-8">
@@ -579,7 +580,7 @@ export default function V3Phunks() {
                   price=""
                   atts={phunk.atts}
                   id={phunk.tokenId}
-                  coll="phunk"
+                  coll="philip"
                 />
               : null )  
             ))}

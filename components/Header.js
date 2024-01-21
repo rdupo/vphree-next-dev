@@ -15,12 +15,12 @@ const Header = () => {
   const { connectedAddress, setConnectedAddress, walletChanged, setWalletChanged } = useWallet();
 
   useEffect(() => {
-	  console.log('connectedAddress:', connectedAddress);
-	  console.log('walletChanged:', walletChanged);
+	  //console.log('connectedAddress:', connectedAddress);
+	  //console.log('walletChanged:', walletChanged);
 
 	  // Update connectedWallet in the page whenever it changes
 	  if (walletChanged) {
-	    console.log('Re-rendering page...');
+	    //console.log('Re-rendering page...');
 	    setWalletChanged(false); // Reset walletChanged to false
 	  }
 	}, [connectedAddress, walletChanged, setWalletChanged]);

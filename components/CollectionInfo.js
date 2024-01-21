@@ -4,7 +4,7 @@ import Tweet from '../assets/twitter.png'
 import Etherscan from '../assets/etherscan.png'
 
 const CollectionInfo = ({title, desc, twitter, contract}) => {
-	const clink = "https://goerli.etherscan.io/address/" + contract;
+	const clink = "https://etherscan.io/address/" + contract;
 
 	return (
 		<div className="collection-info mb-10 w-9/12 px-0">

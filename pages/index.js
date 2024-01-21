@@ -29,9 +29,19 @@ export default function Home() {
               <button className="cta v3-b black-bg v3-txt">View All v3s</button>
             </Link>
           </div>
+          {/*<div>
+            <Link href="/collections/philip-intern-project">
+              <button className="cta v3-bg v3-b black-txt">Philip Marketplace</button>
+            </Link>
+            <Link href="/view-all/philip-intern-project">
+              <button className="cta v3-b black-bg v3-txt">View All Philips</button>
+            </Link>
+          </div>*/}
         </div>
       </div>
-      <Footer/>      
+      <Footer 
+        bg='black'
+      />      
     </>
   )
 }
