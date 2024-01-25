@@ -34,11 +34,11 @@ const getTxnHistory = (id) => {
     };
 
     const transformMarketplaceEvent = (event) => {         
-      for(let i = 0; i < event.length; i++) {        
+      for(let i = 0; i < event.length; i++) {
         combinedEvents.push({
           eventType: event[i].event,
-          from: txn.from,
-          to: txn.to,
+          from: event[i].args.fromAddress,
+          to: event[i].args.toAddress,
           amount: typeof(event[i].args.minValue) != 'undefined' ? ethers.utils.formatUnits(event[i].args.minValue._hex,18):ethers.utils.formatUnits(event[i].args.value._hex,18),
           tokenId: ethers.utils.formatUnits(event[i].args.phunkIndex._hex,0),
           timestamp: event[i].blockNumber,
@@ -71,7 +71,6 @@ const getTxnHistory = (id) => {
 
     const List = await retry(async () => await marketplaceContract.queryFilter(filterList));
     const Offer = await retry(async () => await marketplaceContract.queryFilter(filterOffer));
-    //console.log('hist-offer: ', Offer);
     const Sale = await retry(async () => await marketplaceContract.queryFilter(filterSale));
     const marketplaceEvents = [...List, ...Offer, ...Sale];
     //console.log('mp events', marketplaceEvents)
@@ -81,12 +80,11 @@ const getTxnHistory = (id) => {
     const combinedEvents = [];
     transformMarketplaceEvent(marketplaceEvents);
     transformNFTEvent(nftEvents);
-    //console.log('combined', combinedEvents)
+    console.log('combined', combinedEvents)
     
     // Sort combinedEvents array by timestamp
     combinedEvents.sort((a, b) => b.timestamp - a.timestamp);
     const filteredEvents = combinedEvents.filter( i => i.tokenId.includes(id) );
-    //console.log('filtered', filteredEvents)
 
     // Filter out events with the same timestamp as in transactionHistory
     const refilteredEvents = filteredEvents.filter(event => {

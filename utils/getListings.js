@@ -9,7 +9,7 @@ export default function Home() {
 
   useEffect(() => {
     const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.g.alchemy.com/v2/Xq9-5SRgOVU_UxK6uHdIk-oNvvO_n1iZ',5);
-    const contractAddress = '0x101F2256ba4db70F2659DC9989e0eAFb4Fd53829';
+    const contractAddress = '0x07D0393E24D3b04D5C08f4226E2c70e4dFe92246';
     const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
     const fetchInitialActiveListings = async () => {
