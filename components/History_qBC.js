@@ -36,18 +36,22 @@ const History = ({ transactions }) => {
                     ---
                   </td>
                 }
-                {typeof(transaction.from) !== 'undefined' && transaction.from != '0x0000000000000000000000000000000000000000' ?                
+                {typeof(transaction.from) !== 'undefined' ?                
                   <td>
-                    {transaction.from}
+                    {transaction.from.substr(0,4) +
+                    '...' +
+                    transaction.from.substr(transaction.from.length - 4, transaction.from.length)}
                   </td>
                   :
                   <td>
                     ---
                   </td>
                 }
-                {typeof(transaction.to) !== 'undefined' && transaction.to != '0x0000000000000000000000000000000000000000' ?                
+                {typeof(transaction.to) !== 'undefined' && transaction.eventType != 'Listed' ?                
                   <td>
-                    {}
+                    {transaction.to.substr(0,4) +
+                    '...' +
+                    transaction.to.substr(transaction.to.length - 4, transaction.to.length)}
                   </td>
                   :
                   <td>
