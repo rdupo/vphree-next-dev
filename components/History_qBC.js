@@ -10,6 +10,8 @@ const History = ({ transactions }) => {
             <tr className="v3-txt black-bg">
               <th>Event</th>
               <th>Amount</th>
+              <th>From</th>
+              <th>To</th>
               <th>View Txn</th>
             </tr>
           </thead>
@@ -28,6 +30,24 @@ const History = ({ transactions }) => {
                 {typeof(transaction.amount) !== 'undefined' ?                
                   <td>
                     {transaction.amount > 0 ? Number(transaction.amount).toFixed(3) + "Ξ" : "---"}
+                  </td>
+                  :
+                  <td>
+                    ---
+                  </td>
+                }
+                {typeof(transaction.from) !== 'undefined' && transaction.from != '0x0000000000000000000000000000000000000000' ?                
+                  <td>
+                    {transaction.from}
+                  </td>
+                  :
+                  <td>
+                    ---
+                  </td>
+                }
+                {typeof(transaction.to) !== 'undefined' && transaction.to != '0x0000000000000000000000000000000000000000' ?                
+                  <td>
+                    {}
                   </td>
                   :
                   <td>
