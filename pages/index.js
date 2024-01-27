@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <>
-      <Header onUpdateConnectedWallet={updateConnectedWallet}/>
+      {/*<Header onUpdateConnectedWallet={updateConnectedWallet}/>*/}
       <div className="content home-bg">
         <div className="home-wrapper">
           <h2 className="home-title v3-txt">Welcome to vPhree</h2>
